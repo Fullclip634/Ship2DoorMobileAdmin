@@ -45,10 +45,11 @@ export const Colors = {
 };
 
 export const Fonts = {
-    regular: 'System',
-    medium: 'System',
-    semiBold: 'System',
-    bold: 'System',
+    regular: 'Inter_400Regular',
+    medium: 'Inter_500Medium',
+    semiBold: 'Inter_600SemiBold',
+    bold: 'Inter_700Bold',
+    extraBold: 'Inter_800ExtraBold',
 
     sizes: {
         xs: 11,

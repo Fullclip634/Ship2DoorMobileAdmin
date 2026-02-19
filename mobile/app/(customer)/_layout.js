@@ -77,6 +77,7 @@ export default function CustomerLayout() {
             <Tabs.Screen name="book-shipment" options={{ href: null }} />
             <Tabs.Screen name="order-detail" options={{ href: null }} />
             <Tabs.Screen name="trip-detail" options={{ href: null }} />
+            <Tabs.Screen name="personal-info" options={{ href: null }} />
         </Tabs>
     );
 }

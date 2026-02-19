@@ -4,7 +4,7 @@ import {
     RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../../services/api';
@@ -12,6 +12,7 @@ import { API_ENDPOINTS } from '../../constants/Api';
 import { EmptyState } from '../../components/UIComponents';
 
 export default function CustomerNotifications() {
+    const router = useRouter();
     const [notifications, setNotifications] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
@@ -70,12 +71,29 @@ export default function CustomerNotifications() {
         return `${Math.floor(diff / 86400)}d ago`;
     };
 
+    const handleNotificationTap = async (item) => {
+        if (!item.is_read) await markRead(item.id);
+
+        if (item.reference_id) {
+            const orderTypes = ['order_update', 'pickup_schedule'];
+            const tripTypes = ['trip_update', 'delay'];
+
+            if (orderTypes.includes(item.type)) {
+                router.push({ pathname: '/(customer)/order-detail', params: { id: item.reference_id } });
+            } else if (tripTypes.includes(item.type)) {
+                router.push({ pathname: '/(customer)/trip-detail', params: { id: item.reference_id } });
+            }
+        }
+    };
+
+    const isNavigable = (type) => ['order_update', 'pickup_schedule', 'trip_update', 'delay'].includes(type);
+
     const renderNotification = ({ item }) => {
         const icon = getIcon(item.type);
         return (
             <TouchableOpacity
                 style={[styles.card, !item.is_read && styles.cardUnread]}
-                onPress={() => markRead(item.id)}
+                onPress={() => handleNotificationTap(item)}
                 activeOpacity={0.6}
             >
                 <View style={[styles.iconWrap, { backgroundColor: icon.color + '10' }]}>
@@ -91,6 +109,9 @@ export default function CustomerNotifications() {
                     <Text style={styles.notifMsg} numberOfLines={2}>{item.message}</Text>
                     <Text style={styles.notifTime}>{timeAgo(item.created_at)}</Text>
                 </View>
+                {isNavigable(item.type) && item.reference_id && (
+                    <Ionicons name="chevron-forward" size={18} color={Colors.textLight} style={{ alignSelf: 'center' }} />
+                )}
             </TouchableOpacity>
         );
     };

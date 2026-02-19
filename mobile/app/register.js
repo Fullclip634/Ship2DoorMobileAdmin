@@ -69,10 +69,19 @@ export default function RegisterScreen() {
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/* Back Button */}
-                    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                        <Ionicons name="arrow-back" size={24} color={Colors.text} />
-                    </TouchableOpacity>
+                    {/* Branded Hero */}
+                    <View style={styles.hero}>
+                        <View style={styles.heroGradient}>
+                            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                                <Ionicons name="arrow-back" size={24} color={Colors.white} />
+                            </TouchableOpacity>
+                            <View style={styles.logoMark}>
+                                <Ionicons name="boat" size={32} color={Colors.white} />
+                            </View>
+                            <Text style={styles.brandName}>Ship2Door</Text>
+                        </View>
+                        <View style={styles.heroCurve} />
+                    </View>
 
                     {/* Header */}
                     <View style={styles.header}>
@@ -260,20 +269,44 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         flexGrow: 1,
-        paddingHorizontal: Spacing.xxl,
-        paddingTop: Spacing.xl,
         paddingBottom: 40,
     },
-    backButton: {
-        width: 44, height: 44, borderRadius: 22,
-        backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center',
-        marginBottom: Spacing.xl,
-        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2,
+
+    // Hero
+    hero: { position: 'relative', backgroundColor: Colors.secondary },
+    heroGradient: {
+        paddingTop: 50,
+        paddingBottom: 32,
+        alignItems: 'center',
+        backgroundColor: Colors.secondary,
     },
-    header: { marginBottom: 32 },
-    title: { fontSize: Fonts.sizes.xxxl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
+    backButton: {
+        position: 'absolute', top: 50, left: Spacing.lg,
+        width: 44, height: 44, borderRadius: 22,
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        alignItems: 'center', justifyContent: 'center',
+    },
+    logoMark: {
+        width: 60, height: 60, borderRadius: 30,
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        alignItems: 'center', justifyContent: 'center',
+        marginBottom: Spacing.sm,
+    },
+    brandName: {
+        fontSize: 24, fontWeight: '800', color: Colors.white, letterSpacing: -0.5,
+    },
+    heroCurve: {
+        height: 24,
+        backgroundColor: Colors.background,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        marginTop: -1,
+    },
+
+    header: { paddingHorizontal: Spacing.xxl, marginBottom: 24 },
+    title: { fontSize: Fonts.sizes.xxl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
     subtitle: { fontSize: Fonts.sizes.md, color: Colors.textSecondary, marginTop: Spacing.xs },
-    form: { gap: Spacing.md },
+    form: { gap: Spacing.md, paddingHorizontal: Spacing.xxl },
     row: { flexDirection: 'row', gap: Spacing.md },
     inputGroup: { gap: Spacing.xs },
     label: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.text, marginLeft: 4 },
@@ -292,7 +325,7 @@ const styles = StyleSheet.create({
     },
     registerButtonDisabled: { opacity: 0.7 },
     registerButtonText: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.white },
-    footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 28 },
+    footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 28, paddingHorizontal: Spacing.xxl },
     footerText: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary },
     footerLink: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.primary },
 });

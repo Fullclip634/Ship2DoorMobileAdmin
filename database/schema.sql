@@ -19,7 +19,9 @@ CREATE TABLE users (
     city VARCHAR(100),
     province VARCHAR(100),
     profile_photo VARCHAR(500),
-    push_token VARCHAR(500),
+    push_token VARCHAR(255),
+    reset_token VARCHAR(255),
+    reset_token_expires DATETIME,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

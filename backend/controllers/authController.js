@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const pool = require('../config/db');
+const { sendResetCodeEmail } = require('../services/emailService');
 require('dotenv').config();
 
 // Generate JWT token
@@ -188,6 +190,103 @@ exports.changePassword = async (req, res) => {
         res.json({ success: true, message: 'Password changed successfully' });
     } catch (error) {
         console.error('Change password error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+// Forgot Password — Send reset code via email
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Email is required' });
+        }
+
+        const [users] = await pool.query(
+            'SELECT id, first_name, email FROM users WHERE email = ? AND is_active = TRUE',
+            [email.toLowerCase()]
+        );
+
+        // Always return success to prevent email enumeration
+        if (users.length === 0) {
+            return res.json({ success: true, message: 'If an account with that email exists, a reset code has been sent.' });
+        }
+
+        const user = users[0];
+
+        // Generate 6-digit code
+        const resetCode = crypto.randomInt(100000, 999999).toString();
+        const hashedCode = await bcrypt.hash(resetCode, 10);
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+        // Store hashed code and expiry in DB
+        await pool.query(
+            'UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?',
+            [hashedCode, expiresAt, user.id]
+        );
+
+        // Send email
+        try {
+            await sendResetCodeEmail(user.email, user.first_name, resetCode);
+        } catch (emailErr) {
+            console.error('Email send error:', emailErr);
+            return res.status(500).json({ success: false, message: 'Failed to send reset email. Please try again later.' });
+        }
+
+        res.json({ success: true, message: 'If an account with that email exists, a reset code has been sent.' });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+// Reset Password — Verify code and set new password
+exports.resetPassword = async (req, res) => {
+    try {
+        const { email, code, new_password } = req.body;
+
+        if (!email || !code || !new_password) {
+            return res.status(400).json({ success: false, message: 'Email, code, and new password are required' });
+        }
+
+        if (new_password.length < 6) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+        }
+
+        const [users] = await pool.query(
+            'SELECT id, reset_token, reset_token_expires FROM users WHERE email = ? AND is_active = TRUE',
+            [email.toLowerCase()]
+        );
+
+        if (users.length === 0 || !users[0].reset_token) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired reset code' });
+        }
+
+        const user = users[0];
+
+        // Check expiry
+        if (new Date() > new Date(user.reset_token_expires)) {
+            await pool.query('UPDATE users SET reset_token = NULL, reset_token_expires = NULL WHERE id = ?', [user.id]);
+            return res.status(400).json({ success: false, message: 'Reset code has expired. Please request a new one.' });
+        }
+
+        // Verify code
+        const isValid = await bcrypt.compare(code, user.reset_token);
+        if (!isValid) {
+            return res.status(400).json({ success: false, message: 'Invalid reset code' });
+        }
+
+        // Update password and clear token
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+        await pool.query(
+            'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+            [hashedPassword, user.id]
+        );
+
+        res.json({ success: true, message: 'Password reset successfully. You can now sign in.' });
+    } catch (error) {
+        console.error('Reset password error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };

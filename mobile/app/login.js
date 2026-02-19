@@ -44,7 +44,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -54,91 +54,155 @@ export default function LoginScreen() {
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/* Header */}
-                    <View style={styles.header}>
-                        <View style={styles.iconCircle}>
-                            <Text style={styles.logoIcon}>📦</Text>
+                    {/* Hero Header */}
+                    <View style={styles.hero}>
+                        <View style={styles.heroGradient}>
+                            <View style={styles.logoMark}>
+                                <Ionicons name="boat" size={44} color={Colors.white} />
+                            </View>
+                            <Text style={styles.brandName}>Ship2Door</Text>
+                            <Text style={styles.tagline}>Manila — Bohol Cargo Delivery</Text>
                         </View>
-                        <Text style={styles.logoText}>Ship<Text style={styles.logoAccent}>2</Text>Door</Text>
-                        <Text style={styles.subtitle}>Sign in to your account</Text>
+                        {/* Curved bottom edge */}
+                        <View style={styles.heroCurve} />
                     </View>
 
-                    {/* Form */}
-                    <View style={styles.form}>
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Email Address</Text>
-                            <View style={styles.inputContainer}>
-                                <Ionicons name="mail-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter your email"
-                                    placeholderTextColor={Colors.textLight}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                />
+                    {/* Content */}
+                    <View style={styles.content}>
+                        <Text style={styles.welcomeTitle}>Welcome Back</Text>
+                        <Text style={styles.welcomeSub}>Sign in to manage your shipments</Text>
+
+                        {/* Form */}
+                        <View style={styles.form}>
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Email Address</Text>
+                                <View style={styles.inputContainer}>
+                                    <Ionicons name="mail-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Enter your email"
+                                        placeholderTextColor={Colors.textLight}
+                                        value={email}
+                                        onChangeText={setEmail}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                    />
+                                </View>
                             </View>
+
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Password</Text>
+                                <View style={styles.inputContainer}>
+                                    <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Enter your password"
+                                        placeholderTextColor={Colors.textLight}
+                                        value={password}
+                                        onChangeText={setPassword}
+                                        secureTextEntry={!showPassword}
+                                    />
+                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+                                        <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <TouchableOpacity onPress={() => router.push('/forgot-password')} style={styles.forgotBtn}>
+                                <Text style={styles.forgotText}>Forgot Password?</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+                                onPress={handleLogin}
+                                disabled={loading}
+                                activeOpacity={0.8}
+                            >
+                                {loading ? (
+                                    <ActivityIndicator color={Colors.white} />
+                                ) : (
+                                    <Text style={styles.loginButtonText}>Sign In</Text>
+                                )}
+                            </TouchableOpacity>
                         </View>
 
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Password</Text>
-                            <View style={styles.inputContainer}>
-                                <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Enter your password"
-                                    placeholderTextColor={Colors.textLight}
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry={!showPassword}
-                                />
-                                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                                    <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
-                                </TouchableOpacity>
-                            </View>
+                        {/* Footer */}
+                        <View style={styles.footer}>
+                            <Text style={styles.footerText}>Don't have an account? </Text>
+                            <TouchableOpacity onPress={() => router.push('/register')}>
+                                <Text style={styles.footerLink}>Create Account</Text>
+                            </TouchableOpacity>
                         </View>
-
-                        <TouchableOpacity
-                            style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-                            onPress={handleLogin}
-                            disabled={loading}
-                            activeOpacity={0.8}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color={Colors.white} />
-                            ) : (
-                                <Text style={styles.loginButtonText}>Sign In</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Footer */}
-                    <View style={styles.footer}>
-                        <Text style={styles.footerText}>Don't have an account? </Text>
-                        <TouchableOpacity onPress={() => router.push('/register')}>
-                            <Text style={styles.footerLink}>Create Account</Text>
-                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Colors.background },
-    scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: Spacing.xxl, paddingVertical: 60 },
-    header: { alignItems: 'center', marginBottom: 40 },
-    iconCircle: {
-        width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.primaryFaded,
-        alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.lg,
+    scrollContent: { flexGrow: 1 },
+
+    // Hero Header
+    hero: { position: 'relative', backgroundColor: Colors.secondary },
+    heroGradient: {
+        paddingTop: 60,
+        paddingBottom: 48,
+        alignItems: 'center',
+        backgroundColor: Colors.secondary,
     },
-    logoIcon: { fontSize: 38 },
-    logoText: { fontSize: 34, fontWeight: '800', color: Colors.secondary, letterSpacing: -1 },
-    logoAccent: { color: Colors.primary },
-    subtitle: { fontSize: Fonts.sizes.md, color: Colors.textSecondary, fontWeight: '400', marginTop: Spacing.sm },
+    logoMark: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: Spacing.md,
+    },
+    brandName: {
+        fontSize: 32,
+        fontWeight: '800',
+        color: Colors.white,
+        letterSpacing: -0.5,
+        marginBottom: Spacing.xs,
+    },
+    tagline: {
+        fontSize: Fonts.sizes.sm,
+        fontWeight: '500',
+        color: 'rgba(255,255,255,0.8)',
+        letterSpacing: 1.5,
+        textTransform: 'uppercase',
+    },
+    heroCurve: {
+        height: 28,
+        backgroundColor: Colors.background,
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        marginTop: -1,
+    },
+
+    // Content
+    content: {
+        paddingHorizontal: Spacing.xxl,
+        paddingBottom: 40,
+    },
+    welcomeTitle: {
+        fontSize: Fonts.sizes.xxxl,
+        fontWeight: '800',
+        color: Colors.text,
+        letterSpacing: -0.5,
+    },
+    welcomeSub: {
+        fontSize: Fonts.sizes.md,
+        color: Colors.textSecondary,
+        marginTop: Spacing.xs,
+        marginBottom: Spacing.xxl,
+    },
+
+    // Form
     form: { gap: Spacing.xl },
     inputGroup: { gap: Spacing.sm },
     label: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.text, marginLeft: 4 },
@@ -150,13 +214,17 @@ const styles = StyleSheet.create({
     inputIcon: { marginRight: Spacing.md },
     input: { flex: 1, fontSize: Fonts.sizes.md, color: Colors.text, height: '100%' },
     eyeBtn: { padding: Spacing.xs },
+    forgotBtn: { alignSelf: 'flex-end', marginTop: -Spacing.sm },
+    forgotText: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.primary },
     loginButton: {
         backgroundColor: Colors.primary, height: 52, borderRadius: BorderRadius.md,
-        alignItems: 'center', justifyContent: 'center', marginTop: Spacing.sm,
+        alignItems: 'center', justifyContent: 'center',
         shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
     },
     loginButtonDisabled: { opacity: 0.7 },
     loginButtonText: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.white },
+
+    // Footer
     footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32 },
     footerText: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary },
     footerLink: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.primary },

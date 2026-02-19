@@ -1,5 +1,4 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator, Pressable } from 'react-native';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -86,6 +85,27 @@ export const SectionHeader = ({ title, actionText, onAction }) => (
         )}
     </View>
 );
+
+export const MenuItem = ({ icon, iconBg, label, subtitle, onPress, trailing, danger }) => (
+    <Pressable
+        style={({ pressed }) => [
+            styles.menuItem,
+            pressed && { backgroundColor: Colors.borderLight }
+        ]}
+        onPress={onPress}
+    >
+        <View style={[styles.menuIcon, { backgroundColor: iconBg || Colors.secondaryFaded }]}>
+            <Ionicons name={icon} size={19} color={danger ? Colors.error : Colors.white} />
+        </View>
+        <View style={styles.menuContent}>
+            <Text style={[styles.menuLabel, danger && { color: Colors.error }]}>{label}</Text>
+            {subtitle ? <Text style={styles.menuSub}>{subtitle}</Text> : null}
+        </View>
+        {trailing !== undefined ? trailing : <Ionicons name="chevron-forward" size={18} color={Colors.textLight} />}
+    </Pressable>
+);
+
+export const MenuDivider = () => <View style={styles.menuDivider} />;
 
 const styles = StyleSheet.create({
     badge: {
@@ -204,5 +224,38 @@ const styles = StyleSheet.create({
         fontSize: Fonts.sizes.sm,
         fontWeight: '600',
         color: Colors.primary,
+    },
+    // Menu Items
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: Spacing.lg,
+        gap: Spacing.md,
+    },
+    menuIcon: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    menuContent: {
+        flex: 1,
+    },
+    menuLabel: {
+        fontSize: Fonts.sizes.md,
+        fontWeight: '600',
+        color: Colors.text,
+    },
+    menuSub: {
+        fontSize: Fonts.sizes.xs,
+        color: Colors.textSecondary,
+        marginTop: 1,
+    },
+    menuDivider: {
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: Colors.border,
+        marginLeft: 62,
     },
 });

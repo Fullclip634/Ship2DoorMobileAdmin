@@ -1,29 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
+import {
+    View, Text, StyleSheet, ScrollView, TouchableOpacity,
+    Alert, TextInput, ActivityIndicator, Linking, KeyboardAvoidingView, Platform
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { MenuItem, MenuDivider } from '../../components/UIComponents';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
+
+const ProfileField = ({ label, icon, value, onChangeText, editable, ...props }) => (
+    <View style={styles.fieldGroup}>
+        <Text style={styles.fieldLabel}>{label}</Text>
+        <View style={[styles.fieldInput, !editable && styles.fieldInputDisabled]}>
+            <Ionicons name={icon} size={18} color={Colors.textLight} />
+            <TextInput
+                style={[styles.fieldTextInput, !editable && { color: Colors.textSecondary }]}
+                value={value}
+                onChangeText={onChangeText}
+                placeholderTextColor={Colors.textLight}
+                editable={editable}
+                {...props}
+            />
+        </View>
+    </View>
+);
 
 export default function AdminProfile() {
     const { user, logout, updateUser } = useAuth();
     const router = useRouter();
-    const [editing, setEditing] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [form, setForm] = useState({ first_name: user?.first_name || '', last_name: user?.last_name || '', phone: user?.phone || '' });
-    const updateField = (k, v) => setForm({ ...form, [k]: v });
-    const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase();
 
-    const handleSave = async () => {
-        setLoading(true);
-        try {
-            const res = await api.put(API_ENDPOINTS.UPDATE_PROFILE, form);
-            if (res.success) { await updateUser(res.data); setEditing(false); Alert.alert('Success', 'Profile updated'); }
-        } catch (e) { Alert.alert('Error', e.message); } finally { setLoading(false); }
-    };
+    const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase();
 
     const handleLogout = () => {
         Alert.alert('Sign Out', 'Are you sure?', [
@@ -31,90 +41,150 @@ export default function AdminProfile() {
             { text: 'Sign Out', style: 'destructive', onPress: async () => { await logout(); router.replace('/login'); } },
         ]);
     };
-
     return (
-        <SafeAreaView style={s.container}>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.content}>
-                <View style={s.header}>
-                    <Text style={s.title}>Admin Profile</Text>
-                    {!editing ? (
-                        <TouchableOpacity style={s.editBtn} onPress={() => setEditing(true)}>
-                            <Ionicons name="create-outline" size={18} color={Colors.secondary} />
-                            <Text style={s.editText}>Edit</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <View style={{ flexDirection: 'row', gap: 8 }}>
-                            <TouchableOpacity style={s.cancelBtn} onPress={() => { setEditing(false); setForm({ first_name: user?.first_name || '', last_name: user?.last_name || '', phone: user?.phone || '' }); }}>
-                                <Text style={s.cancelText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={s.saveBtn} onPress={handleSave} disabled={loading}>
-                                {loading ? <ActivityIndicator color={Colors.white} size="small" /> : <Text style={s.saveText}>Save</Text>}
-                            </TouchableOpacity>
+        <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+                    {/* ── Profile Header ── */}
+                    <View style={styles.profileHeader}>
+                        <View style={styles.avatarOuter}>
+                            <View style={styles.avatar}>
+                                <Text style={styles.avatarText}>{initials}</Text>
+                            </View>
                         </View>
-                    )}
-                </View>
+                        <Text style={styles.userName}>{user?.first_name} {user?.last_name}</Text>
+                        <Text style={styles.userEmail}>{user?.email}</Text>
+                        <View style={styles.roleBadge}>
+                            <Ionicons name="shield-checkmark" size={12} color={Colors.secondary} />
+                            <Text style={styles.roleText}>Administrator</Text>
+                        </View>
+                    </View>
 
-                <View style={s.avatarSection}>
-                    <View style={s.avatar}><Text style={s.avatarText}>{initials}</Text></View>
-                    <Text style={s.userName}>{user?.first_name} {user?.last_name}</Text>
-                    <Text style={s.userEmail}>{user?.email}</Text>
-                    <View style={s.roleBadge}><Text style={s.roleText}>Administrator</Text></View>
-                </View>
 
-                <View style={s.card}>
-                    <Text style={s.sectionTitle}>Personal Information</Text>
-                    {editing ? (
-                        <>
-                            <View style={s.inputGroup}><Text style={s.label}>First Name</Text><TextInput style={s.input} value={form.first_name} onChangeText={v => updateField('first_name', v)} /></View>
-                            <View style={s.inputGroup}><Text style={s.label}>Last Name</Text><TextInput style={s.input} value={form.last_name} onChangeText={v => updateField('last_name', v)} /></View>
-                            <View style={s.inputGroup}><Text style={s.label}>Phone</Text><TextInput style={s.input} value={form.phone} onChangeText={v => updateField('phone', v)} keyboardType="phone-pad" /></View>
-                        </>
-                    ) : (
-                        <>
-                            <View style={s.infoRow}><Ionicons name="person-outline" size={18} color={Colors.textSecondary} /><Text style={s.infoVal}>{user?.first_name} {user?.last_name}</Text></View>
-                            <View style={s.infoRow}><Ionicons name="mail-outline" size={18} color={Colors.textSecondary} /><Text style={s.infoVal}>{user?.email}</Text></View>
-                            <View style={s.infoRow}><Ionicons name="call-outline" size={18} color={Colors.textSecondary} /><Text style={s.infoVal}>{user?.phone || '—'}</Text></View>
-                        </>
-                    )}
-                </View>
+                    {/* ── Account Settings ── */}
+                    <Text style={[styles.groupLabel, { marginTop: Spacing.lg }]}>ACCOUNT SETTINGS</Text>
+                    <View style={styles.menuCard}>
+                        <MenuItem
+                            icon="person-outline" iconBg={Colors.secondary} label="Personal Information" subtitle="Update your contact details"
+                            onPress={() => router.push('/(admin)/personal-info')}
+                        />
+                        <MenuDivider />
+                        <MenuItem
+                            icon="shield-checkmark-outline" iconBg={Colors.primary} label="Change Password" subtitle="Update your account password"
+                            onPress={() => router.push('/change-password')}
+                        />
+                    </View>
 
-                <TouchableOpacity style={s.logoutBtn} onPress={handleLogout}>
-                    <Ionicons name="log-out-outline" size={20} color={Colors.error} />
-                    <Text style={s.logoutText}>Sign Out</Text>
-                </TouchableOpacity>
-                <Text style={s.version}>Ship2Door Admin v1.0.0</Text>
-                <View style={{ height: 30 }} />
-            </ScrollView>
+                    {/* ── Management ── */}
+                    <Text style={styles.groupLabel}>MANAGEMENT</Text>
+                    <View style={styles.menuCard}>
+                        <MenuItem
+                            icon="cube-outline" iconBg={Colors.primary} label="Order Management" subtitle="View and manage all orders"
+                            onPress={() => router.push('/(admin)/orders')}
+                        />
+                        <MenuDivider />
+                        <MenuItem
+                            icon="boat-outline" iconBg={Colors.info} label="Trip Management" subtitle="Create and manage cargo trips"
+                            onPress={() => router.push('/(admin)/trips')}
+                        />
+                        <MenuDivider />
+                        <MenuItem
+                            icon="people-outline" iconBg="#F59E0B" label="Customers" subtitle="View registered customers"
+                            onPress={() => router.push('/(admin)/customers')}
+                        />
+                        <MenuDivider />
+                        <MenuItem
+                            icon="megaphone-outline" iconBg="#EC4899" label="Announcements" subtitle="Create and manage notices"
+                            onPress={() => router.push('/(admin)/announcements')}
+                        />
+                    </View>
+
+                    {/* ── Support & About ── */}
+                    <Text style={styles.groupLabel}>SUPPORT & ABOUT</Text>
+                    <View style={styles.menuCard}>
+                        <MenuItem
+                            icon="help-circle-outline" iconBg="#8B5CF6" label="Help & FAQ" subtitle="Admin help and documentation"
+                            onPress={() => Alert.alert('Help & FAQ', 'Contact us at admin@ship2door.com for assistance.')}
+                        />
+                        <MenuDivider />
+                        <MenuItem
+                            icon="chatbubble-ellipses-outline" iconBg="#06B6D4" label="Contact Support" subtitle="Reach the technical team"
+                            onPress={() => Linking.openURL('mailto:admin@ship2door.com')}
+                        />
+                        <MenuDivider />
+                        <MenuItem
+                            icon="document-text-outline" iconBg={Colors.textSecondary} label="Terms & Privacy" subtitle="Read our policies"
+                            onPress={() => Alert.alert('Terms & Privacy', 'Ship2Door Terms of Service and Privacy Policy.')}
+                        />
+                    </View>
+
+                    {/* ── Sign Out ── */}
+                    <View style={[styles.menuCard, { marginTop: Spacing.sm }]}>
+                        <MenuItem
+                            icon="log-out-outline" iconBg={Colors.errorLight} label="Sign Out" danger
+                            onPress={handleLogout} trailing={null}
+                        />
+                    </View>
+
+                    <View style={{ height: 40 }} />
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
 
-const s = StyleSheet.create({
+const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Colors.background },
-    content: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.xl },
-    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl },
-    title: { fontSize: Fonts.sizes.xxl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
-    editBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, backgroundColor: Colors.secondaryFaded, borderRadius: BorderRadius.full },
-    editText: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.secondary },
-    cancelBtn: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, borderRadius: BorderRadius.full, backgroundColor: Colors.borderLight },
-    cancelText: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.textSecondary },
-    saveBtn: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, borderRadius: BorderRadius.full, backgroundColor: Colors.secondary },
-    saveText: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.white },
-    avatarSection: { alignItems: 'center', marginBottom: Spacing.xl },
-    avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.secondary, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md },
-    avatarText: { fontSize: 28, fontWeight: '800', color: Colors.white },
-    userName: { fontSize: Fonts.sizes.xl, fontWeight: '700', color: Colors.text },
+    content: { paddingBottom: 20 },
+    profileHeader: {
+        alignItems: 'center', paddingTop: Spacing.xl, paddingBottom: Spacing.lg, paddingHorizontal: Spacing.xl,
+    },
+    avatarOuter: {
+        padding: 4, borderRadius: 52, borderWidth: 2.5, borderColor: Colors.secondary + '30', marginBottom: Spacing.md,
+    },
+    avatar: {
+        width: 88, height: 88, borderRadius: 44, backgroundColor: Colors.secondary, alignItems: 'center', justifyContent: 'center',
+    },
+    avatarText: { fontSize: 32, fontWeight: '800', color: Colors.white },
+    userName: { fontSize: Fonts.sizes.xl, fontWeight: '700', color: Colors.text, marginTop: 2 },
     userEmail: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary, marginTop: 2 },
-    roleBadge: { backgroundColor: Colors.secondaryFaded, paddingHorizontal: Spacing.md, paddingVertical: 3, borderRadius: BorderRadius.full, marginTop: Spacing.sm },
+    roleBadge: {
+        flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.sm,
+        backgroundColor: Colors.secondaryFaded, paddingHorizontal: Spacing.md, paddingVertical: 4, borderRadius: BorderRadius.full,
+    },
     roleText: { fontSize: Fonts.sizes.xs, fontWeight: '700', color: Colors.secondary },
-    card: { backgroundColor: Colors.white, borderRadius: BorderRadius.lg, padding: Spacing.xl, marginBottom: Spacing.lg, shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
-    sectionTitle: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.text, marginBottom: Spacing.lg },
-    infoRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.lg },
-    infoVal: { fontSize: Fonts.sizes.md, color: Colors.text, fontWeight: '500' },
-    inputGroup: { marginBottom: Spacing.md },
-    label: { fontSize: Fonts.sizes.xs, fontWeight: '600', color: Colors.textLight, marginBottom: Spacing.xs },
-    input: { backgroundColor: Colors.background, borderRadius: BorderRadius.sm, borderWidth: 1, borderColor: Colors.secondary + '40', paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, fontSize: Fonts.sizes.md, color: Colors.text },
-    logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, backgroundColor: Colors.errorLight, borderRadius: BorderRadius.lg, padding: Spacing.lg, borderWidth: 1, borderColor: Colors.error + '30' },
-    logoutText: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.error },
-    version: { textAlign: 'center', fontSize: Fonts.sizes.xs, color: Colors.textLight, marginTop: Spacing.xl },
+
+    sectionHeader: {
+        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+        paddingHorizontal: Spacing.xxl, marginBottom: Spacing.sm, marginTop: Spacing.md
+    },
+    groupLabel: {
+        fontSize: Fonts.sizes.xs, fontWeight: '700', color: Colors.textLight,
+        letterSpacing: 0.8, paddingHorizontal: Spacing.xxl, marginBottom: Spacing.sm, marginTop: Spacing.sm,
+    },
+    editLink: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.primary },
+
+    menuCard: {
+        backgroundColor: Colors.white, borderRadius: BorderRadius.lg, marginHorizontal: Spacing.lg, marginBottom: Spacing.md,
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2,
+        overflow: 'hidden',
+    },
+    card: {
+        backgroundColor: Colors.white, borderRadius: BorderRadius.lg, marginHorizontal: Spacing.lg, padding: Spacing.lg,
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2,
+    },
+    row: { flexDirection: 'row', gap: Spacing.md },
+    fieldGroup: { marginBottom: Spacing.md },
+    fieldLabel: { fontSize: Fonts.sizes.xs, fontWeight: '600', color: Colors.textLight, marginBottom: 4 },
+    fieldInput: {
+        flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, backgroundColor: Colors.background,
+        borderRadius: BorderRadius.sm, borderWidth: 1, borderColor: Colors.border, paddingHorizontal: Spacing.md, height: 44,
+    },
+    fieldInputDisabled: { backgroundColor: Colors.background, borderColor: 'transparent' },
+    fieldTextInput: { flex: 1, fontSize: Fonts.sizes.sm, color: Colors.text, height: '100%' },
+    editActions: { flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.md },
+    cancelBtn: { flex: 1, height: 44, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: Colors.border },
+    cancelText: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.textSecondary },
+    saveBtn: { flex: 1, height: 44, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.primary, shadowColor: Colors.mid, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 },
+    saveText: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.white },
 });

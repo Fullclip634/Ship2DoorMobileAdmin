@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity,
-    RefreshControl,
+    RefreshControl, TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -16,6 +16,7 @@ export default function AdminOrders() {
     const [orders, setOrders] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [filter, setFilter] = useState('all');
+    const [search, setSearch] = useState('');
 
     const loadOrders = async () => {
         try {
@@ -29,9 +30,16 @@ export default function AdminOrders() {
     const onRefresh = async () => { setRefreshing(true); await loadOrders(); setRefreshing(false); };
 
     const filteredOrders = orders.filter((o) => {
-        if (filter === 'pending') return o.status === 'pending';
-        if (filter === 'active') return !['delivered', 'cancelled', 'pending'].includes(o.status);
-        if (filter === 'delivered') return o.status === 'delivered';
+        if (filter === 'pending' && o.status !== 'pending') return false;
+        if (filter === 'active' && ['delivered', 'cancelled', 'pending'].includes(o.status)) return false;
+        if (filter === 'delivered' && o.status !== 'delivered') return false;
+        if (search.trim()) {
+            const q = search.toLowerCase();
+            return (o.order_number || '').toLowerCase().includes(q)
+                || (o.customer_first_name || '').toLowerCase().includes(q)
+                || (o.customer_last_name || '').toLowerCase().includes(q)
+                || (o.item_description || '').toLowerCase().includes(q);
+        }
         return true;
     });
 
@@ -79,6 +87,23 @@ export default function AdminOrders() {
                 <Text style={styles.subtitle}>{orders.length} total orders</Text>
             </View>
 
+            <View style={styles.searchContainer}>
+                <Ionicons name="search-outline" size={18} color={Colors.textLight} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search orders..."
+                    placeholderTextColor={Colors.textLight}
+                    value={search}
+                    onChangeText={setSearch}
+                    autoCorrect={false}
+                />
+                {search.length > 0 && (
+                    <TouchableOpacity onPress={() => setSearch('')}>
+                        <Ionicons name="close-circle" size={18} color={Colors.textLight} />
+                    </TouchableOpacity>
+                )}
+            </View>
+
             <View style={styles.filters}>
                 <FilterButton label="All" value="all" />
                 <FilterButton label="Pending" value="pending" count={pendingCount} />
@@ -103,6 +128,12 @@ const styles = StyleSheet.create({
     header: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.xl, paddingBottom: Spacing.md },
     title: { fontSize: Fonts.sizes.xxl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
     subtitle: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary, marginTop: 2 },
+    searchContainer: {
+        flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+        backgroundColor: Colors.white, borderRadius: BorderRadius.md, borderWidth: 1.5, borderColor: Colors.border,
+        paddingHorizontal: Spacing.lg, height: 44, marginHorizontal: Spacing.xl, marginBottom: Spacing.md,
+    },
+    searchInput: { flex: 1, fontSize: Fonts.sizes.md, color: Colors.text, height: '100%' },
     filters: {
         flexDirection: 'row', paddingHorizontal: Spacing.xl, gap: Spacing.sm, marginBottom: Spacing.md, flexWrap: 'wrap',
     },

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
@@ -12,6 +12,7 @@ export default function AdminCustomers() {
     const router = useRouter();
     const [customers, setCustomers] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [search, setSearch] = useState('');
 
     const load = async () => { try { const r = await api.get(API_ENDPOINTS.CUSTOMERS); setCustomers(r.data || []); } catch (e) { } };
     useFocusEffect(useCallback(() => { load(); }, []));
@@ -42,9 +43,32 @@ export default function AdminCustomers() {
                 <Text style={s.title}>Customers ({customers.length})</Text>
                 <View style={{ width: 44 }} />
             </View>
-            <FlatList data={customers} keyExtractor={i => i.id.toString()} renderItem={renderCustomer} contentContainerStyle={s.list}
+            <View style={s.searchContainer}>
+                <Ionicons name="search-outline" size={18} color={Colors.textLight} />
+                <TextInput
+                    style={s.searchInput}
+                    placeholder="Search customers..."
+                    placeholderTextColor={Colors.textLight}
+                    value={search}
+                    onChangeText={setSearch}
+                    autoCorrect={false}
+                />
+                {search.length > 0 && (
+                    <TouchableOpacity onPress={() => setSearch('')}>
+                        <Ionicons name="close-circle" size={18} color={Colors.textLight} />
+                    </TouchableOpacity>
+                )}
+            </View>
+            <FlatList data={customers.filter(c => {
+                if (!search.trim()) return true;
+                const q = search.toLowerCase();
+                return (c.first_name || '').toLowerCase().includes(q)
+                    || (c.last_name || '').toLowerCase().includes(q)
+                    || (c.email || '').toLowerCase().includes(q)
+                    || (c.phone || '').toLowerCase().includes(q);
+            })} keyExtractor={i => i.id.toString()} renderItem={renderCustomer} contentContainerStyle={s.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
-                ListEmptyComponent={<EmptyState icon="people-outline" title="No Customers Yet" message="Customers will appear here once they register." />}
+                ListEmptyComponent={<EmptyState icon="people-outline" title="No Customers Found" message="No customers match your search." />}
             />
         </SafeAreaView>
     );
@@ -56,6 +80,12 @@ const s = StyleSheet.create({
     backBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center', shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
     title: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.text },
     list: { paddingHorizontal: Spacing.xl, paddingBottom: 20, paddingTop: Spacing.sm },
+    searchContainer: {
+        flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+        backgroundColor: Colors.white, borderRadius: BorderRadius.md, borderWidth: 1.5, borderColor: Colors.border,
+        paddingHorizontal: Spacing.lg, height: 44, marginHorizontal: Spacing.xl, marginBottom: Spacing.md,
+    },
+    searchInput: { flex: 1, fontSize: Fonts.sizes.md, color: Colors.text, height: '100%' },
     card: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, backgroundColor: Colors.white, borderRadius: BorderRadius.lg, padding: Spacing.lg, marginBottom: Spacing.sm, shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 1 },
     avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: Colors.secondary, alignItems: 'center', justifyContent: 'center' },
     avatarText: { fontSize: 16, fontWeight: '800', color: Colors.white },
