@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, EmptyState, SectionHeader } from '../../components/UIComponents';
@@ -71,7 +71,7 @@ export default function CustomerHome() {
                         style={styles.notifButton}
                         onPress={() => router.push('/(customer)/notifications')}
                     >
-                        <Ionicons name="notifications-outline" size={24} color={Colors.text} />
+                        <MaterialCommunityIcons name="bell-outline" size={24} color={Colors.text} />
                         {unreadCount > 0 && (
                             <View style={styles.notifBadge}>
                                 <Text style={styles.notifBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
@@ -84,19 +84,19 @@ export default function CustomerHome() {
                 <View style={styles.quickActions}>
                     <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/(customer)/trips')}>
                         <View style={[styles.quickIcon, { backgroundColor: Colors.primaryFaded }]}>
-                            <Ionicons name="boat-outline" size={24} color={Colors.primary} />
+                            <MaterialCommunityIcons name="ferry" size={24} color={Colors.primary} />
                         </View>
                         <Text style={styles.quickLabel}>View Trips</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/(customer)/orders')}>
                         <View style={[styles.quickIcon, { backgroundColor: Colors.secondaryFaded }]}>
-                            <Ionicons name="cube-outline" size={24} color={Colors.secondary} />
+                            <MaterialCommunityIcons name="package-variant-closed" size={24} color={Colors.secondary} />
                         </View>
                         <Text style={styles.quickLabel}>My Orders</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/(customer)/notifications')}>
                         <View style={[styles.quickIcon, { backgroundColor: Colors.successLight }]}>
-                            <Ionicons name="notifications-outline" size={24} color={Colors.success} />
+                            <MaterialCommunityIcons name="bell-ring-outline" size={24} color={Colors.success} />
                         </View>
                         <Text style={styles.quickLabel}>Alerts</Text>
                     </TouchableOpacity>
@@ -109,7 +109,7 @@ export default function CustomerHome() {
                         {announcements.map((a) => (
                             <View key={a.id} style={styles.announcementCard}>
                                 <View style={styles.announcementIcon}>
-                                    <Ionicons name="megaphone" size={18} color={Colors.primary} />
+                                    <MaterialCommunityIcons name="bullhorn" size={18} color={Colors.primary} />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={styles.announcementTitle}>{a.title}</Text>
@@ -128,7 +128,7 @@ export default function CustomerHome() {
                     onAction={() => router.push('/(customer)/trips')}
                 />
                 {upcomingTrips.length === 0 ? (
-                    <EmptyState icon="boat-outline" title="No Upcoming Trips" message="Check back later for new trip schedules." />
+                    <EmptyState icon="ferry" title="No Upcoming Trips" message="Check back later for new trip schedules." />
                 ) : (
                     upcomingTrips.map((trip) => (
                         <TouchableOpacity
@@ -143,12 +143,12 @@ export default function CustomerHome() {
                             </View>
                             <View style={styles.tripInfo}>
                                 <View style={styles.tripDateRow}>
-                                    <Ionicons name="calendar-outline" size={16} color={Colors.textSecondary} />
+                                    <MaterialCommunityIcons name="calendar-outline" size={16} color={Colors.textSecondary} />
                                     <Text style={styles.tripDate}>Departure: {formatDate(trip.departure_date)}</Text>
                                 </View>
                                 {trip.estimated_arrival && (
                                     <View style={styles.tripDateRow}>
-                                        <Ionicons name="flag-outline" size={16} color={Colors.textSecondary} />
+                                        <MaterialCommunityIcons name="flag-outline" size={16} color={Colors.textSecondary} />
                                         <Text style={styles.tripDate}>Est. Arrival: {formatDate(trip.estimated_arrival)}</Text>
                                     </View>
                                 )}

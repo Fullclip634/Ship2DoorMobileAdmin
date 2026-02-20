@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
     const [form, setForm] = useState({
@@ -73,10 +73,10 @@ export default function RegisterScreen() {
                     <View style={styles.hero}>
                         <View style={styles.heroGradient}>
                             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                                <Ionicons name="arrow-back" size={24} color={Colors.white} />
+                                <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.white} />
                             </TouchableOpacity>
                             <View style={styles.logoMark}>
-                                <Ionicons name="boat" size={32} color={Colors.white} />
+                                <MaterialCommunityIcons name="ferry" size={32} color={Colors.white} />
                             </View>
                             <Text style={styles.brandName}>Ship2Door</Text>
                         </View>
@@ -96,7 +96,7 @@ export default function RegisterScreen() {
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.label}>First Name *</Text>
                                     <View style={styles.inputContainer}>
-                                        <Ionicons name="person-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                        <MaterialCommunityIcons name="account-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                         <TextInput
                                             style={styles.input}
                                             placeholder="First name"
@@ -111,7 +111,7 @@ export default function RegisterScreen() {
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.label}>Last Name *</Text>
                                     <View style={styles.inputContainer}>
-                                        <Ionicons name="person-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                        <MaterialCommunityIcons name="account-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                         <TextInput
                                             style={styles.input}
                                             placeholder="Last name"
@@ -127,7 +127,7 @@ export default function RegisterScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Email Address *</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="mail-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="email-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Enter email address"
@@ -143,7 +143,7 @@ export default function RegisterScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Phone Number</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="call-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="phone-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Enter phone number"
@@ -158,7 +158,7 @@ export default function RegisterScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Password *</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="At least 6 characters"
@@ -168,7 +168,7 @@ export default function RegisterScreen() {
                                     secureTextEntry={!showPassword}
                                 />
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                                    <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
+                                    <MaterialCommunityIcons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -176,7 +176,7 @@ export default function RegisterScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Confirm Password *</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Re-enter password"
@@ -191,7 +191,7 @@ export default function RegisterScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Address</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="location-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="map-marker-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Enter address"
@@ -207,7 +207,7 @@ export default function RegisterScreen() {
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.label}>City</Text>
                                     <View style={styles.inputContainer}>
-                                        <Ionicons name="business-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                        <MaterialCommunityIcons name="city-variant-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                         <TextInput
                                             style={styles.input}
                                             placeholder="City"
@@ -222,7 +222,7 @@ export default function RegisterScreen() {
                                 <View style={styles.inputGroup}>
                                     <Text style={styles.label}>Province</Text>
                                     <View style={styles.inputContainer}>
-                                        <Ionicons name="map-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                        <MaterialCommunityIcons name="map-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                         <TextInput
                                             style={styles.input}
                                             placeholder="Province"

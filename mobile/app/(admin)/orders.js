@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, EmptyState } from '../../components/UIComponents';
@@ -75,7 +75,7 @@ export default function AdminOrders() {
                 <Text style={styles.footerText}>
                     {item.direction === 'manila_to_bohol' ? 'Manila to Bohol' : 'Bohol to Manila'} • {formatDate(item.created_at)}
                 </Text>
-                <Ionicons name="chevron-forward" size={18} color={Colors.textLight} />
+                <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.textLight} />
             </View>
         </TouchableOpacity>
     );
@@ -88,7 +88,7 @@ export default function AdminOrders() {
             </View>
 
             <View style={styles.searchContainer}>
-                <Ionicons name="search-outline" size={18} color={Colors.textLight} />
+                <MaterialCommunityIcons name="magnify" size={18} color={Colors.textLight} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search orders..."
@@ -99,7 +99,7 @@ export default function AdminOrders() {
                 />
                 {search.length > 0 && (
                     <TouchableOpacity onPress={() => setSearch('')}>
-                        <Ionicons name="close-circle" size={18} color={Colors.textLight} />
+                        <MaterialCommunityIcons name="close-circle" size={18} color={Colors.textLight} />
                     </TouchableOpacity>
                 )}
             </View>
@@ -117,7 +117,7 @@ export default function AdminOrders() {
                 renderItem={renderOrder}
                 contentContainerStyle={styles.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
-                ListEmptyComponent={<EmptyState icon="cube-outline" title="No Orders" message="No orders match this filter." />}
+                ListEmptyComponent={<EmptyState icon="package-variant-closed" title="No Orders" message="No orders match this filter." />}
             />
         </SafeAreaView>
     );

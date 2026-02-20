@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, EmptyState } from '../../components/UIComponents';
@@ -63,12 +63,12 @@ export default function CustomerTrips() {
             </View>
             <View style={styles.cardBody}>
                 <View style={styles.dateRow}>
-                    <Ionicons name="calendar-outline" size={16} color={Colors.textSecondary} />
+                    <MaterialCommunityIcons name="calendar-outline" size={16} color={Colors.textSecondary} />
                     <Text style={styles.dateText}>Departs: {formatDate(item.departure_date)}</Text>
                 </View>
                 {item.estimated_arrival && (
                     <View style={styles.dateRow}>
-                        <Ionicons name="flag-outline" size={16} color={Colors.textSecondary} />
+                        <MaterialCommunityIcons name="flag-outline" size={16} color={Colors.textSecondary} />
                         <Text style={styles.dateText}>Arrives: {formatDate(item.estimated_arrival)}</Text>
                     </View>
                 )}
@@ -78,7 +78,7 @@ export default function CustomerTrips() {
             </View>
             <View style={styles.cardFooter}>
                 <View style={styles.orderCount}>
-                    <Ionicons name="cube-outline" size={14} color={Colors.textSecondary} />
+                    <MaterialCommunityIcons name="package-variant-closed" size={14} color={Colors.textSecondary} />
                     <Text style={styles.orderCountText}>{item.order_count || 0} orders</Text>
                 </View>
                 <Text style={styles.viewDetail}>View Details</Text>
@@ -105,7 +105,7 @@ export default function CustomerTrips() {
                 renderItem={renderTrip}
                 contentContainerStyle={styles.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
-                ListEmptyComponent={<EmptyState icon="boat-outline" title="No Trips Available" message="No upcoming trips at the moment. Check back soon!" />}
+                ListEmptyComponent={<EmptyState icon="ferry" title="No Trips Available" message="No upcoming trips at the moment. Check back soon!" />}
             />
         </SafeAreaView>
     );

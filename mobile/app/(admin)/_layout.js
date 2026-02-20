@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 import { Platform } from 'react-native';
 
@@ -33,35 +33,35 @@ export default function AdminLayout() {
                 name="dashboard"
                 options={{
                     title: 'Dashboard',
-                    tabBarIcon: ({ color }) => <Ionicons name="grid" size={22} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name={focused ? 'chart-box' : 'chart-box-outline'} size={22} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="trips"
                 options={{
                     title: 'Trips',
-                    tabBarIcon: ({ color }) => <Ionicons name="boat" size={22} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name={focused ? 'ferry' : 'ferry'} size={22} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="orders"
                 options={{
                     title: 'Orders',
-                    tabBarIcon: ({ color }) => <Ionicons name="cube" size={22} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name={focused ? 'package-variant' : 'package-variant-closed'} size={22} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="announcements"
                 options={{
                     title: 'Announce',
-                    tabBarIcon: ({ color }) => <Ionicons name="megaphone" size={22} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name={focused ? 'bullhorn' : 'bullhorn-outline'} size={22} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
                     title: 'Profile',
-                    tabBarIcon: ({ color }) => <Ionicons name="person" size={22} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <MaterialCommunityIcons name={focused ? 'account' : 'account-outline'} size={22} color={color} />,
                 }}
             />
             <Tabs.Screen name="create-trip" options={{ href: null }} />

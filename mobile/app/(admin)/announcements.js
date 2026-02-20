@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { EmptyState } from '../../components/UIComponents';
@@ -63,10 +63,10 @@ export default function AdminAnnouncements() {
         <View style={styles.card}>
             <View style={styles.cardTop}>
                 <View style={styles.pinIcon}>
-                    <Ionicons name={item.is_pinned ? 'pin' : 'megaphone'} size={18} color={Colors.primary} />
+                    <MaterialCommunityIcons name={item.is_pinned ? 'pin' : 'bullhorn'} size={18} color={Colors.primary} />
                 </View>
                 <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                    <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                    <MaterialCommunityIcons name="delete-outline" size={20} color={Colors.error} />
                 </TouchableOpacity>
             </View>
             <Text style={styles.cardTitle}>{item.title}</Text>
@@ -83,7 +83,7 @@ export default function AdminAnnouncements() {
                     <Text style={styles.subtitle}>{announcements.length} posted</Text>
                 </View>
                 <TouchableOpacity style={styles.addBtn} onPress={() => setShowCreate(true)}>
-                    <Ionicons name="add" size={22} color={Colors.white} />
+                    <MaterialCommunityIcons name="plus" size={22} color={Colors.white} />
                 </TouchableOpacity>
             </View>
 
@@ -93,7 +93,7 @@ export default function AdminAnnouncements() {
                 renderItem={renderItem}
                 contentContainerStyle={styles.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
-                ListEmptyComponent={<EmptyState icon="megaphone-outline" title="No Announcements" message="Post your first announcement to notify all customers." />}
+                ListEmptyComponent={<EmptyState icon="bullhorn-outline" title="No Announcements" message="Post your first announcement to notify all customers." />}
             />
 
             {/* Create Modal */}
@@ -103,7 +103,7 @@ export default function AdminAnnouncements() {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>New Announcement</Text>
                             <TouchableOpacity onPress={() => setShowCreate(false)}>
-                                <Ionicons name="close" size={24} color={Colors.text} />
+                                <MaterialCommunityIcons name="close" size={24} color={Colors.text} />
                             </TouchableOpacity>
                         </View>
 
@@ -134,7 +134,7 @@ export default function AdminAnnouncements() {
                                 <ActivityIndicator color={Colors.white} />
                             ) : (
                                 <>
-                                    <Ionicons name="send" size={18} color={Colors.white} />
+                                    <MaterialCommunityIcons name="send" size={18} color={Colors.white} />
                                     <Text style={styles.postText}>Post & Notify All Customers</Text>
                                 </>
                             )}

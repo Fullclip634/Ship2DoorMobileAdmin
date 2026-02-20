@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MenuItem, MenuDivider } from '../../components/UIComponents';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
@@ -16,7 +16,7 @@ const ProfileField = ({ label, icon, value, onChangeText, editable, ...props }) 
     <View style={styles.fieldGroup}>
         <Text style={styles.fieldLabel}>{label}</Text>
         <View style={[styles.fieldInput, !editable && styles.fieldInputDisabled]}>
-            <Ionicons name={icon} size={18} color={Colors.textLight} />
+            <MaterialCommunityIcons name={icon} size={18} color={Colors.textLight} />
             <TextInput
                 style={[styles.fieldTextInput, !editable && { color: Colors.textSecondary }]}
                 value={value}
@@ -55,7 +55,7 @@ export default function AdminProfile() {
                         <Text style={styles.userName}>{user?.first_name} {user?.last_name}</Text>
                         <Text style={styles.userEmail}>{user?.email}</Text>
                         <View style={styles.roleBadge}>
-                            <Ionicons name="shield-checkmark" size={12} color={Colors.secondary} />
+                            <MaterialCommunityIcons name="shield-check" size={12} color={Colors.secondary} />
                             <Text style={styles.roleText}>Administrator</Text>
                         </View>
                     </View>
@@ -65,12 +65,12 @@ export default function AdminProfile() {
                     <Text style={[styles.groupLabel, { marginTop: Spacing.lg }]}>ACCOUNT SETTINGS</Text>
                     <View style={styles.menuCard}>
                         <MenuItem
-                            icon="person-outline" iconBg={Colors.secondary} label="Personal Information" subtitle="Update your contact details"
+                            icon="account-outline" iconBg={Colors.secondary} label="Personal Information" subtitle="Update your contact details"
                             onPress={() => router.push('/(admin)/personal-info')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="shield-checkmark-outline" iconBg={Colors.primary} label="Change Password" subtitle="Update your account password"
+                            icon="shield-check-outline" iconBg={Colors.primary} label="Change Password" subtitle="Update your account password"
                             onPress={() => router.push('/change-password')}
                         />
                     </View>
@@ -79,22 +79,22 @@ export default function AdminProfile() {
                     <Text style={styles.groupLabel}>MANAGEMENT</Text>
                     <View style={styles.menuCard}>
                         <MenuItem
-                            icon="cube-outline" iconBg={Colors.primary} label="Order Management" subtitle="View and manage all orders"
+                            icon="package-variant-closed" iconBg={Colors.primary} label="Order Management" subtitle="View and manage all orders"
                             onPress={() => router.push('/(admin)/orders')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="boat-outline" iconBg={Colors.info} label="Trip Management" subtitle="Create and manage cargo trips"
+                            icon="ferry" iconBg={Colors.info} label="Trip Management" subtitle="Create and manage cargo trips"
                             onPress={() => router.push('/(admin)/trips')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="people-outline" iconBg="#F59E0B" label="Customers" subtitle="View registered customers"
+                            icon="account-group-outline" iconBg={Colors.amber} label="Customers" subtitle="View registered customers"
                             onPress={() => router.push('/(admin)/customers')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="megaphone-outline" iconBg="#EC4899" label="Announcements" subtitle="Create and manage notices"
+                            icon="bullhorn-outline" iconBg={Colors.pink} label="Announcements" subtitle="Create and manage notices"
                             onPress={() => router.push('/(admin)/announcements')}
                         />
                     </View>
@@ -103,17 +103,17 @@ export default function AdminProfile() {
                     <Text style={styles.groupLabel}>SUPPORT & ABOUT</Text>
                     <View style={styles.menuCard}>
                         <MenuItem
-                            icon="help-circle-outline" iconBg="#8B5CF6" label="Help & FAQ" subtitle="Admin help and documentation"
+                            icon="help-circle-outline" iconBg={Colors.purple} label="Help & FAQ" subtitle="Admin help and documentation"
                             onPress={() => Alert.alert('Help & FAQ', 'Contact us at admin@ship2door.com for assistance.')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="chatbubble-ellipses-outline" iconBg="#06B6D4" label="Contact Support" subtitle="Reach the technical team"
+                            icon="chat-processing-outline" iconBg={Colors.cyan} label="Contact Support" subtitle="Reach the technical team"
                             onPress={() => Linking.openURL('mailto:admin@ship2door.com')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="document-text-outline" iconBg={Colors.textSecondary} label="Terms & Privacy" subtitle="Read our policies"
+                            icon="file-document-outline" iconBg={Colors.textSecondary} label="Terms & Privacy" subtitle="Read our policies"
                             onPress={() => Alert.alert('Terms & Privacy', 'Ship2Door Terms of Service and Privacy Policy.')}
                         />
                     </View>
@@ -121,7 +121,7 @@ export default function AdminProfile() {
                     {/* ── Sign Out ── */}
                     <View style={[styles.menuCard, { marginTop: Spacing.sm }]}>
                         <MenuItem
-                            icon="log-out-outline" iconBg={Colors.errorLight} label="Sign Out" danger
+                            icon="logout" iconBg={Colors.errorLight} label="Sign Out" danger
                             onPress={handleLogout} trailing={null}
                         />
                     </View>

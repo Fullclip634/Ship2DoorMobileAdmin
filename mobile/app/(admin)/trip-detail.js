@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, LoadingScreen, EmptyState } from '../../components/UIComponents';
@@ -71,7 +71,7 @@ export default function AdminTripDetail() {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={24} color={Colors.text} />
+                    <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Manage Trip</Text>
                 <View style={{ width: 44 }} />
@@ -85,12 +85,12 @@ export default function AdminTripDetail() {
                         <StatusBadge status={trip.status} />
                     </View>
                     <View style={styles.dateRow}>
-                        <Ionicons name="calendar" size={18} color={Colors.primary} />
+                        <MaterialCommunityIcons name="calendar" size={18} color={Colors.primary} />
                         <Text style={styles.dateText}>Departure: {formatDate(trip.departure_date)}</Text>
                     </View>
                     {trip.estimated_arrival && (
                         <View style={[styles.dateRow, { marginTop: 6 }]}>
-                            <Ionicons name="flag" size={18} color={Colors.success} />
+                            <MaterialCommunityIcons name="flag" size={18} color={Colors.success} />
                             <Text style={styles.dateText}>Arrival: {formatDate(trip.estimated_arrival)}</Text>
                         </View>
                     )}
@@ -103,7 +103,7 @@ export default function AdminTripDetail() {
 
                         {nextStatus && (
                             <TouchableOpacity style={styles.statusBtn} onPress={() => updateStatus(nextStatus)}>
-                                <Ionicons name="arrow-forward-circle" size={22} color={Colors.white} />
+                                <MaterialCommunityIcons name="arrow-right-circle" size={22} color={Colors.white} />
                                 <Text style={styles.statusBtnText}>
                                     Move to: {nextStatus.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                                 </Text>
@@ -111,7 +111,7 @@ export default function AdminTripDetail() {
                         )}
 
                         <TouchableOpacity style={styles.delayBtn} onPress={() => setShowDelay(!showDelay)}>
-                            <Ionicons name="warning" size={20} color={Colors.warning} />
+                            <MaterialCommunityIcons name="alert" size={20} color={Colors.warning} />
                             <Text style={styles.delayBtnText}>Send Delay Notice</Text>
                         </TouchableOpacity>
 

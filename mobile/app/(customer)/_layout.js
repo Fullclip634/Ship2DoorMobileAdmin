@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors, Fonts } from '../../constants/Colors';
 import { View, Platform } from 'react-native';
 
@@ -33,8 +33,8 @@ export default function CustomerLayout() {
                 name="home"
                 options={{
                     title: 'Home',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home" size={22} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <MaterialCommunityIcons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
                     ),
                 }}
             />
@@ -42,8 +42,8 @@ export default function CustomerLayout() {
                 name="trips"
                 options={{
                     title: 'Trips',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="boat" size={22} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <MaterialCommunityIcons name={focused ? 'ferry' : 'ferry'} size={22} color={color} />
                     ),
                 }}
             />
@@ -51,8 +51,8 @@ export default function CustomerLayout() {
                 name="orders"
                 options={{
                     title: 'My Orders',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="cube" size={22} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <MaterialCommunityIcons name={focused ? 'package-variant' : 'package-variant-closed'} size={22} color={color} />
                     ),
                 }}
             />
@@ -60,8 +60,8 @@ export default function CustomerLayout() {
                 name="notifications"
                 options={{
                     title: 'Alerts',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="notifications" size={22} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <MaterialCommunityIcons name={focused ? 'bell' : 'bell-outline'} size={22} color={color} />
                     ),
                 }}
             />
@@ -69,8 +69,8 @@ export default function CustomerLayout() {
                 name="profile"
                 options={{
                     title: 'Profile',
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="person" size={22} color={color} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <MaterialCommunityIcons name={focused ? 'account' : 'account-outline'} size={22} color={color} />
                     ),
                 }}
             />
@@ -78,6 +78,7 @@ export default function CustomerLayout() {
             <Tabs.Screen name="order-detail" options={{ href: null }} />
             <Tabs.Screen name="trip-detail" options={{ href: null }} />
             <Tabs.Screen name="personal-info" options={{ href: null }} />
+            <Tabs.Screen name="support-chat" options={{ href: null }} />
         </Tabs>
     );
 }

@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, EmptyState } from '../../components/UIComponents';
@@ -40,7 +40,7 @@ export default function AdminTrips() {
             </View>
             <View style={styles.cardBody}>
                 <View style={styles.dateRow}>
-                    <Ionicons name="calendar-outline" size={16} color={Colors.textSecondary} />
+                    <MaterialCommunityIcons name="calendar-outline" size={16} color={Colors.textSecondary} />
                     <Text style={styles.dateText}>{formatDate(item.departure_date)}</Text>
                 </View>
             </View>
@@ -59,12 +59,12 @@ export default function AdminTrips() {
                     <Text style={styles.subtitle}>{trips.length} total trips</Text>
                 </View>
                 <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/(admin)/create-trip')}>
-                    <Ionicons name="add" size={22} color={Colors.white} />
+                    <MaterialCommunityIcons name="plus" size={22} color={Colors.white} />
                 </TouchableOpacity>
             </View>
 
             <View style={styles.searchContainer}>
-                <Ionicons name="search-outline" size={18} color={Colors.textLight} />
+                <MaterialCommunityIcons name="magnify" size={18} color={Colors.textLight} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search trips..."
@@ -75,7 +75,7 @@ export default function AdminTrips() {
                 />
                 {search.length > 0 && (
                     <TouchableOpacity onPress={() => setSearch('')}>
-                        <Ionicons name="close-circle" size={18} color={Colors.textLight} />
+                        <MaterialCommunityIcons name="close-circle" size={18} color={Colors.textLight} />
                     </TouchableOpacity>
                 )}
             </View>
@@ -104,7 +104,7 @@ export default function AdminTrips() {
                 renderItem={renderTrip}
                 contentContainerStyle={styles.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
-                ListEmptyComponent={<EmptyState icon="boat-outline" title="No Trips Found" message="No trips match your search." />}
+                ListEmptyComponent={<EmptyState icon="ferry" title="No Trips Found" message="No trips match your search." />}
             />
         </SafeAreaView>
     );

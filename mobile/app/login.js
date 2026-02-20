@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -58,7 +58,7 @@ export default function LoginScreen() {
                     <View style={styles.hero}>
                         <View style={styles.heroGradient}>
                             <View style={styles.logoMark}>
-                                <Ionicons name="boat" size={44} color={Colors.white} />
+                                <MaterialCommunityIcons name="ferry" size={44} color={Colors.white} />
                             </View>
                             <Text style={styles.brandName}>Ship2Door</Text>
                             <Text style={styles.tagline}>Manila — Bohol Cargo Delivery</Text>
@@ -77,7 +77,7 @@ export default function LoginScreen() {
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Email Address</Text>
                                 <View style={styles.inputContainer}>
-                                    <Ionicons name="mail-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <MaterialCommunityIcons name="email-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your email"
@@ -94,7 +94,7 @@ export default function LoginScreen() {
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Password</Text>
                                 <View style={styles.inputContainer}>
-                                    <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your password"
@@ -104,7 +104,7 @@ export default function LoginScreen() {
                                         secureTextEntry={!showPassword}
                                     />
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                                        <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
+                                        <MaterialCommunityIcons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
                                     </TouchableOpacity>
                                 </View>
                             </View>

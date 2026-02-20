@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 
@@ -15,7 +15,7 @@ const ProfileField = ({ label, icon, value, onChangeText, editable, ...props }) 
     <View style={styles.fieldGroup}>
         <Text style={styles.fieldLabel}>{label}</Text>
         <View style={[styles.fieldInput, !editable && styles.fieldInputDisabled]}>
-            <Ionicons name={icon} size={18} color={Colors.textLight} />
+            <MaterialCommunityIcons name={icon} size={18} color={Colors.textLight} />
             <TextInput
                 style={[styles.fieldTextInput, !editable && { color: Colors.textSecondary }]}
                 value={value}
@@ -86,7 +86,7 @@ function PersonalInformation() {
                 {/* ── Header ── */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                        <Ionicons name="arrow-back" size={24} color={Colors.text} />
+                        <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Personal Information</Text>
                     {!isEditing ? (
@@ -102,20 +102,20 @@ function PersonalInformation() {
                     <View style={styles.card}>
                         <View style={styles.row}>
                             <View style={{ flex: 1 }}>
-                                <ProfileField label="First Name" icon="person-outline" value={form.first_name} onChangeText={v => updateField('first_name', v)} editable={isEditing} />
+                                <ProfileField label="First Name" icon="account-outline" value={form.first_name} onChangeText={v => updateField('first_name', v)} editable={isEditing} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <ProfileField label="Last Name" icon="person-outline" value={form.last_name} onChangeText={v => updateField('last_name', v)} editable={isEditing} />
+                                <ProfileField label="Last Name" icon="account-outline" value={form.last_name} onChangeText={v => updateField('last_name', v)} editable={isEditing} />
                             </View>
                         </View>
-                        <ProfileField label="Phone Number" icon="call-outline" value={form.phone} onChangeText={v => updateField('phone', v)} keyboardType="phone-pad" editable={isEditing} />
+                        <ProfileField label="Phone Number" icon="phone-outline" value={form.phone} onChangeText={v => updateField('phone', v)} keyboardType="phone-pad" editable={isEditing} />
 
                         <View style={styles.divider} />
 
-                        <ProfileField label="Street Address" icon="location-outline" value={form.address} onChangeText={v => updateField('address', v)} editable={isEditing} />
+                        <ProfileField label="Street Address" icon="map-marker-outline" value={form.address} onChangeText={v => updateField('address', v)} editable={isEditing} />
                         <View style={styles.row}>
                             <View style={{ flex: 1 }}>
-                                <ProfileField label="City" icon="business-outline" value={form.city} onChangeText={v => updateField('city', v)} editable={isEditing} />
+                                <ProfileField label="City" icon="city-variant-outline" value={form.city} onChangeText={v => updateField('city', v)} editable={isEditing} />
                             </View>
                             <View style={{ flex: 1 }}>
                                 <ProfileField label="Province" icon="map-outline" value={form.province} onChangeText={v => updateField('province', v)} editable={isEditing} />

@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, LoadingScreen } from '../../components/UIComponents';
@@ -55,12 +55,12 @@ export default function OrderDetail() {
     const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 
     const statusSteps = [
-        { key: 'pending', label: 'Pending', icon: 'time' },
-        { key: 'confirmed', label: 'Confirmed', icon: 'checkmark' },
-        { key: 'pickup_scheduled', label: 'Pickup Scheduled', icon: 'calendar' },
-        { key: 'picked_up', label: 'Picked Up', icon: 'cube' },
-        { key: 'in_transit', label: 'In Transit', icon: 'boat' },
-        { key: 'delivered', label: 'Delivered', icon: 'checkmark-circle' },
+        { key: 'pending', label: 'Pending', icon: 'clock-outline' },
+        { key: 'confirmed', label: 'Confirmed', icon: 'check' },
+        { key: 'pickup_scheduled', label: 'Pickup Scheduled', icon: 'calendar-check' },
+        { key: 'picked_up', label: 'Picked Up', icon: 'package-variant' },
+        { key: 'in_transit', label: 'In Transit', icon: 'ferry' },
+        { key: 'delivered', label: 'Delivered', icon: 'check-circle' },
     ];
 
     const currentIndex = statusSteps.findIndex((s) => s.key === order.status);
@@ -69,7 +69,7 @@ export default function OrderDetail() {
     const InfoRow = ({ icon, label, value }) => (
         <View style={styles.infoRow}>
             <View style={styles.infoIcon}>
-                <Ionicons name={icon} size={18} color={Colors.primary} />
+                <MaterialCommunityIcons name={icon} size={18} color={Colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
                 <Text style={styles.infoLabel}>{label}</Text>
@@ -82,7 +82,7 @@ export default function OrderDetail() {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={24} color={Colors.text} />
+                    <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Order Details</Text>
                 <View style={{ width: 44 }} />
@@ -111,7 +111,7 @@ export default function OrderDetail() {
                                     <View key={step.key} style={styles.stepRow}>
                                         <View style={styles.stepIndicator}>
                                             <View style={[styles.stepDot, isActive && styles.stepDotActive, isCurrent && styles.stepDotCurrent]}>
-                                                <Ionicons name={step.icon} size={12} color={isActive ? Colors.white : Colors.textLight} />
+                                                <MaterialCommunityIcons name={step.icon} size={12} color={isActive ? Colors.white : Colors.textLight} />
                                             </View>
                                             {i < statusSteps.length - 1 && (
                                                 <View style={[styles.stepLine, isActive && styles.stepLineActive]} />
@@ -130,23 +130,23 @@ export default function OrderDetail() {
                 {/* Item Details */}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Item Details</Text>
-                    <InfoRow icon="cube-outline" label="Description" value={order.item_description} />
+                    <InfoRow icon="package-variant-closed" label="Description" value={order.item_description} />
                     <InfoRow icon="layers-outline" label="Quantity" value={order.quantity?.toString()} />
-                    <InfoRow icon="barbell-outline" label="Weight" value={order.weight_estimate} />
+                    <InfoRow icon="weight" label="Weight" value={order.weight_estimate} />
                     {order.special_instructions && (
-                        <InfoRow icon="document-text-outline" label="Instructions" value={order.special_instructions} />
+                        <InfoRow icon="file-document-outline" label="Instructions" value={order.special_instructions} />
                     )}
                 </View>
 
                 {/* Pickup & Delivery */}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Pickup & Delivery</Text>
-                    <InfoRow icon="location-outline" label="Pickup Address" value={`${order.pickup_address}${order.pickup_city ? `, ${order.pickup_city}` : ''}`} />
+                    <InfoRow icon="map-marker-outline" label="Pickup Address" value={`${order.pickup_address}${order.pickup_city ? `, ${order.pickup_city}` : ''}`} />
                     {order.pickup_date && <InfoRow icon="calendar-outline" label="Pickup Date" value={`${formatDate(order.pickup_date)}${order.pickup_time_slot ? ` (${order.pickup_time_slot})` : ''}`} />}
                     <View style={styles.divider} />
-                    <InfoRow icon="navigate-outline" label="Delivery Address" value={`${order.delivery_address}${order.delivery_city ? `, ${order.delivery_city}` : ''}`} />
-                    <InfoRow icon="person-outline" label="Receiver" value={order.receiver_name} />
-                    <InfoRow icon="call-outline" label="Receiver Phone" value={order.receiver_phone} />
+                    <InfoRow icon="navigation-variant-outline" label="Delivery Address" value={`${order.delivery_address}${order.delivery_city ? `, ${order.delivery_city}` : ''}`} />
+                    <InfoRow icon="account-outline" label="Receiver" value={order.receiver_name} />
+                    <InfoRow icon="phone-outline" label="Receiver Phone" value={order.receiver_phone} />
                 </View>
 
                 {/* Admin Notes */}
@@ -160,7 +160,7 @@ export default function OrderDetail() {
                 {/* Cancel Button */}
                 {order.status === 'pending' && (
                     <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                        <Ionicons name="close-circle-outline" size={20} color={Colors.error} />
+                        <MaterialCommunityIcons name="close-circle-outline" size={20} color={Colors.error} />
                         <Text style={styles.cancelText}>Cancel Order</Text>
                     </TouchableOpacity>
                 )}

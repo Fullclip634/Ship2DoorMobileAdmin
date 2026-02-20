@@ -33,6 +33,19 @@ export const Colors = {
     info: '#3B82F6',
     infoLight: '#EFF6FF',
 
+    purple: '#8B5CF6',
+    purpleLight: '#F5F3FF',
+    pink: '#EC4899',
+    pinkLight: '#FDF2F8',
+    cyan: '#06B6D4',
+    cyanLight: '#ECFEFF',
+    amber: '#F59E0B',
+    amberLight: '#FFFBEB',
+    indigo: '#6366F1',
+    indigoLight: '#EEF2FF',
+    sky: '#0EA5E9',
+    skyLight: '#F0F9FF',
+
     shadow: '#000000',
     overlay: 'rgba(0, 0, 0, 0.5)',
 

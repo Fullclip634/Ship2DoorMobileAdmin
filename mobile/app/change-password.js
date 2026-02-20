@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../services/api';
 import { API_ENDPOINTS } from '../constants/Api';
 
@@ -78,7 +78,7 @@ export default function ChangePasswordScreen() {
                     {/* Header */}
                     <View style={styles.topBar}>
                         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                            <Ionicons name="arrow-back" size={24} color={Colors.text} />
+                            <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
                         </TouchableOpacity>
                         <Text style={styles.topTitle}>Change Password</Text>
                         <View style={{ width: 44 }} />
@@ -86,7 +86,7 @@ export default function ChangePasswordScreen() {
 
                     <View style={styles.header}>
                         <View style={styles.iconCircle}>
-                            <Ionicons name="shield-checkmark-outline" size={32} color={Colors.primary} />
+                            <MaterialCommunityIcons name="shield-check-outline" size={32} color={Colors.primary} />
                         </View>
                         <Text style={styles.subtitle}>Update your password to keep your account secure</Text>
                     </View>
@@ -96,7 +96,7 @@ export default function ChangePasswordScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Current Password</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Enter current password"
@@ -106,7 +106,7 @@ export default function ChangePasswordScreen() {
                                     secureTextEntry={!showCurrent}
                                 />
                                 <TouchableOpacity onPress={() => setShowCurrent(!showCurrent)} style={styles.eyeBtn}>
-                                    <Ionicons name={showCurrent ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
+                                    <MaterialCommunityIcons name={showCurrent ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -116,7 +116,7 @@ export default function ChangePasswordScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>New Password</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="lock-open-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="lock-open-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="At least 6 characters"
@@ -126,7 +126,7 @@ export default function ChangePasswordScreen() {
                                     secureTextEntry={!showNew}
                                 />
                                 <TouchableOpacity onPress={() => setShowNew(!showNew)} style={styles.eyeBtn}>
-                                    <Ionicons name={showNew ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
+                                    <MaterialCommunityIcons name={showNew ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
                                 </TouchableOpacity>
                             </View>
                             {/* Strength indicator */}
@@ -143,7 +143,7 @@ export default function ChangePasswordScreen() {
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Confirm New Password</Text>
                             <View style={styles.inputContainer}>
-                                <Ionicons name="lock-closed-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Re-enter new password"
@@ -153,8 +153,8 @@ export default function ChangePasswordScreen() {
                                     secureTextEntry={!showNew}
                                 />
                                 {confirmPassword.length > 0 && (
-                                    <Ionicons
-                                        name={confirmPassword === newPassword ? 'checkmark-circle' : 'close-circle'}
+                                    <MaterialCommunityIcons
+                                        name={confirmPassword === newPassword ? 'check-circle' : 'close-circle'}
                                         size={20}
                                         color={confirmPassword === newPassword ? Colors.success : Colors.error}
                                     />

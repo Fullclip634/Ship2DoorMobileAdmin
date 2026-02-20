@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { EmptyState } from '../../components/UIComponents';
@@ -28,8 +28,8 @@ export default function AdminCustomers() {
                     <Text style={s.email}>{item.email}</Text>
                     {item.phone && <Text style={s.phone}>{item.phone}</Text>}
                     <View style={s.statsRow}>
-                        <View style={s.stat}><Ionicons name="cube-outline" size={12} color={Colors.primary} /><Text style={s.statText}>{item.total_orders} orders</Text></View>
-                        <View style={s.stat}><Ionicons name="checkmark-circle-outline" size={12} color={Colors.success} /><Text style={s.statText}>{item.completed_orders} delivered</Text></View>
+                        <View style={s.stat}><MaterialCommunityIcons name="package-variant-closed" size={12} color={Colors.primary} /><Text style={s.statText}>{item.total_orders} orders</Text></View>
+                        <View style={s.stat}><MaterialCommunityIcons name="check-circle-outline" size={12} color={Colors.success} /><Text style={s.statText}>{item.completed_orders} delivered</Text></View>
                     </View>
                 </View>
             </View>
@@ -39,12 +39,12 @@ export default function AdminCustomers() {
     return (
         <SafeAreaView style={s.container}>
             <View style={s.header}>
-                <TouchableOpacity style={s.backBtn} onPress={() => router.back()}><Ionicons name="arrow-back" size={24} color={Colors.text} /></TouchableOpacity>
+                <TouchableOpacity style={s.backBtn} onPress={() => router.back()}><MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} /></TouchableOpacity>
                 <Text style={s.title}>Customers ({customers.length})</Text>
                 <View style={{ width: 44 }} />
             </View>
             <View style={s.searchContainer}>
-                <Ionicons name="search-outline" size={18} color={Colors.textLight} />
+                <MaterialCommunityIcons name="magnify" size={18} color={Colors.textLight} />
                 <TextInput
                     style={s.searchInput}
                     placeholder="Search customers..."
@@ -55,7 +55,7 @@ export default function AdminCustomers() {
                 />
                 {search.length > 0 && (
                     <TouchableOpacity onPress={() => setSearch('')}>
-                        <Ionicons name="close-circle" size={18} color={Colors.textLight} />
+                        <MaterialCommunityIcons name="close-circle" size={18} color={Colors.textLight} />
                     </TouchableOpacity>
                 )}
             </View>
@@ -68,7 +68,7 @@ export default function AdminCustomers() {
                     || (c.phone || '').toLowerCase().includes(q);
             })} keyExtractor={i => i.id.toString()} renderItem={renderCustomer} contentContainerStyle={s.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
-                ListEmptyComponent={<EmptyState icon="people-outline" title="No Customers Found" message="No customers match your search." />}
+                ListEmptyComponent={<EmptyState icon="account-group-outline" title="No Customers Found" message="No customers match your search." />}
             />
         </SafeAreaView>
     );
