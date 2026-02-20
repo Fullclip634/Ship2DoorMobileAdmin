@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ArrowLeft, Ship, Package, Layers, Weight, MapPin, Building2, Navigation, User, Phone, CheckCircle } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { useAuth } from '../../context/AuthContext';
@@ -66,7 +66,7 @@ export default function BookShipment() {
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                        <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+                        <ArrowLeft size={24} color={Colors.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Book Shipment</Text>
                     <View style={{ width: 44 }} />
@@ -76,7 +76,7 @@ export default function BookShipment() {
                     {/* Trip Info Banner */}
                     <View style={styles.tripBanner}>
                         <View style={styles.bannerIcon}>
-                            <MaterialCommunityIcons name="ferry" size={20} color={Colors.primary} />
+                            <Ship size={20} color={Colors.primary} />
                         </View>
                         <View style={{ flex: 1 }}>
                             <Text style={styles.tripBannerDir}>{dirLabel}</Text>
@@ -90,7 +90,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Item Description <Text style={styles.required}>*</Text></Text>
                         <View style={[styles.inputWrap, { alignItems: 'flex-start' }]}>
-                            <MaterialCommunityIcons name="package-variant-closed" size={18} color={Colors.primary} style={[styles.inputIcon, { marginTop: 16 }]} />
+                            <Package size={18} color={Colors.primary} style={[styles.inputIcon, { marginTop: 16 }]} />
                             <TextInput
                                 style={[styles.input, styles.inputMultiline]}
                                 placeholderTextColor={Colors.textLight}
@@ -108,7 +108,7 @@ export default function BookShipment() {
                             <View style={styles.fieldGroup}>
                                 <Text style={styles.label}>Quantity</Text>
                                 <View style={styles.inputWrap}>
-                                    <MaterialCommunityIcons name="layers-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                                    <Layers size={18} color={Colors.primary} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholderTextColor={Colors.textLight}
@@ -124,7 +124,7 @@ export default function BookShipment() {
                             <View style={styles.fieldGroup}>
                                 <Text style={styles.label}>Weight (est.)</Text>
                                 <View style={styles.inputWrap}>
-                                    <MaterialCommunityIcons name="weight" size={18} color={Colors.primary} style={styles.inputIcon} />
+                                    <Weight size={18} color={Colors.primary} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholderTextColor={Colors.textLight}
@@ -159,7 +159,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Pickup Address <Text style={styles.required}>*</Text></Text>
                         <View style={styles.inputWrap}>
-                            <MaterialCommunityIcons name="map-marker-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                            <MapPin size={18} color={Colors.primary} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor={Colors.textLight}
@@ -173,7 +173,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Pickup City</Text>
                         <View style={styles.inputWrap}>
-                            <MaterialCommunityIcons name="city-variant-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                            <Building2 size={18} color={Colors.primary} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor={Colors.textLight}
@@ -190,7 +190,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Delivery Address <Text style={styles.required}>*</Text></Text>
                         <View style={styles.inputWrap}>
-                            <MaterialCommunityIcons name="navigation-variant-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                            <Navigation size={18} color={Colors.primary} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor={Colors.textLight}
@@ -204,7 +204,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Delivery City</Text>
                         <View style={styles.inputWrap}>
-                            <MaterialCommunityIcons name="city-variant-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                            <Building2 size={18} color={Colors.primary} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor={Colors.textLight}
@@ -221,7 +221,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Receiver Name <Text style={styles.required}>*</Text></Text>
                         <View style={styles.inputWrap}>
-                            <MaterialCommunityIcons name="account-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                            <User size={18} color={Colors.primary} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor={Colors.textLight}
@@ -235,7 +235,7 @@ export default function BookShipment() {
                     <View style={styles.fieldGroup}>
                         <Text style={styles.label}>Receiver Phone <Text style={styles.required}>*</Text></Text>
                         <View style={styles.inputWrap}>
-                            <MaterialCommunityIcons name="phone-outline" size={18} color={Colors.primary} style={styles.inputIcon} />
+                            <Phone size={18} color={Colors.primary} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor={Colors.textLight}
@@ -258,7 +258,7 @@ export default function BookShipment() {
                             <ActivityIndicator color={Colors.white} />
                         ) : (
                             <>
-                                <MaterialCommunityIcons name="check-circle-outline" size={22} color={Colors.white} />
+                                <CheckCircle size={22} color={Colors.white} />
                                 <Text style={styles.submitText}>Submit Booking</Text>
                             </>
                         )}

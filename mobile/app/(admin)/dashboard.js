@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Plus, Truck, ChevronRight, PlusCircle, Users, Megaphone } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatCard, StatusBadge, DirectionBadge, SectionHeader } from '../../components/UIComponents';
@@ -61,46 +61,46 @@ export default function AdminDashboard() {
                         style={styles.addBtn}
                         onPress={() => router.push('/(admin)/create-trip')}
                     >
-                        <MaterialCommunityIcons name="plus" size={24} color={Colors.white} />
+                        <Plus size={24} color={Colors.white} />
                     </TouchableOpacity>
                 </View>
 
                 {/* Stats Row 1 */}
                 <View style={styles.statsRow}>
-                    <StatCard icon="ferry" label="Active Trips" value={stats.active_trips} color={Colors.info} />
-                    <StatCard icon="clock-outline" label="Pending Orders" value={stats.pending_orders} color={Colors.warning} />
+                    <StatCard icon="ship" label="Active Trips" value={stats.active_trips} color={Colors.info} />
+                    <StatCard icon="clock" label="Pending Orders" value={stats.pending_orders} color={Colors.warning} />
                 </View>
 
                 {/* Stats Row 2 */}
                 <View style={styles.statsRow}>
-                    <StatCard icon="account-group-outline" label="Customers" value={stats.total_customers} color={Colors.secondary} />
-                    <StatCard icon="check-circle-outline" label="Delivered" value={stats.total_delivered} color={Colors.success} />
+                    <StatCard icon="users" label="Customers" value={stats.total_customers} color={Colors.secondary} />
+                    <StatCard icon="check-circle" label="Delivered" value={stats.total_delivered} color={Colors.success} />
                 </View>
 
                 {/* Today's Pickups */}
                 {stats.today_pickups > 0 && (
                     <View style={styles.pickupBanner}>
-                        <MaterialCommunityIcons name="truck-delivery" size={22} color={Colors.white} />
+                        <Truck size={22} color={Colors.white} />
                         <View style={{ flex: 1 }}>
                             <Text style={styles.pickupTitle}>{stats.today_pickups} Pickup{stats.today_pickups > 1 ? 's' : ''} Today</Text>
                             <Text style={styles.pickupSub}>Items scheduled for pickup today</Text>
                         </View>
-                        <MaterialCommunityIcons name="chevron-right" size={20} color="rgba(255,255,255,0.7)" />
+                        <ChevronRight size={20} color="rgba(255,255,255,0.7)" />
                     </View>
                 )}
 
                 {/* Quick Actions */}
                 <View style={styles.quickRow}>
                     <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/create-trip')}>
-                        <MaterialCommunityIcons name="plus-circle-outline" size={20} color={Colors.secondary} />
+                        <PlusCircle size={20} color={Colors.secondary} />
                         <Text style={styles.quickText}>New Trip</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/customers')}>
-                        <MaterialCommunityIcons name="account-group-outline" size={20} color={Colors.secondary} />
+                        <Users size={20} color={Colors.secondary} />
                         <Text style={styles.quickText}>Customers</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/announcements')}>
-                        <MaterialCommunityIcons name="bullhorn-outline" size={20} color={Colors.secondary} />
+                        <Megaphone size={20} color={Colors.secondary} />
                         <Text style={styles.quickText}>Announce</Text>
                     </TouchableOpacity>
                 </View>

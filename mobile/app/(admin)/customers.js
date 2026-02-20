@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Tex
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Package, CheckCircle, ArrowLeft, Search, XCircle } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { EmptyState } from '../../components/UIComponents';
@@ -28,8 +28,8 @@ export default function AdminCustomers() {
                     <Text style={s.email}>{item.email}</Text>
                     {item.phone && <Text style={s.phone}>{item.phone}</Text>}
                     <View style={s.statsRow}>
-                        <View style={s.stat}><MaterialCommunityIcons name="package-variant-closed" size={12} color={Colors.primary} /><Text style={s.statText}>{item.total_orders} orders</Text></View>
-                        <View style={s.stat}><MaterialCommunityIcons name="check-circle-outline" size={12} color={Colors.success} /><Text style={s.statText}>{item.completed_orders} delivered</Text></View>
+                        <View style={s.stat}><Package size={12} color={Colors.primary} /><Text style={s.statText}>{item.total_orders} orders</Text></View>
+                        <View style={s.stat}><CheckCircle size={12} color={Colors.success} /><Text style={s.statText}>{item.completed_orders} delivered</Text></View>
                     </View>
                 </View>
             </View>
@@ -39,12 +39,12 @@ export default function AdminCustomers() {
     return (
         <SafeAreaView style={s.container}>
             <View style={s.header}>
-                <TouchableOpacity style={s.backBtn} onPress={() => router.back()}><MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} /></TouchableOpacity>
+                <TouchableOpacity style={s.backBtn} onPress={() => router.back()}><ArrowLeft size={24} color={Colors.text} /></TouchableOpacity>
                 <Text style={s.title}>Customers ({customers.length})</Text>
                 <View style={{ width: 44 }} />
             </View>
             <View style={s.searchContainer}>
-                <MaterialCommunityIcons name="magnify" size={18} color={Colors.textLight} />
+                <Search size={18} color={Colors.textLight} />
                 <TextInput
                     style={s.searchInput}
                     placeholder="Search customers..."
@@ -55,7 +55,7 @@ export default function AdminCustomers() {
                 />
                 {search.length > 0 && (
                     <TouchableOpacity onPress={() => setSearch('')}>
-                        <MaterialCommunityIcons name="close-circle" size={18} color={Colors.textLight} />
+                        <XCircle size={18} color={Colors.textLight} />
                     </TouchableOpacity>
                 )}
             </View>

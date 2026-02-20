@@ -6,7 +6,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ArrowLeft, FileText, XCircle } from 'lucide-react-native';
+import Icon from '../../components/LucideIcon';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, LoadingScreen } from '../../components/UIComponents';
@@ -55,7 +56,7 @@ export default function AdminOrderDetail() {
     const InfoRow = ({ icon, label, value }) => (
         <View style={styles.infoRow}>
             <View style={styles.infoIcon}>
-                <MaterialCommunityIcons name={icon} size={16} color={Colors.secondary} />
+                <Icon name={icon} size={16} color={Colors.secondary} />
             </View>
             <View style={{ flex: 1 }}>
                 <Text style={styles.infoLabel}>{label}</Text>
@@ -67,8 +68,8 @@ export default function AdminOrderDetail() {
     const statusButtons = {
         pending: [{ status: 'confirmed', label: 'Confirm Order', icon: 'check-circle', color: Colors.info }],
         confirmed: [{ status: 'pickup_scheduled', label: 'Schedule Pickup', icon: 'calendar-check', color: Colors.indigo }],
-        pickup_scheduled: [{ status: 'picked_up', label: 'Mark as Picked Up', icon: 'package-variant', color: Colors.purple }],
-        picked_up: [{ status: 'in_transit', label: 'Mark In Transit', icon: 'ferry', color: Colors.primary }],
+        pickup_scheduled: [{ status: 'picked_up', label: 'Mark as Picked Up', icon: 'package', color: Colors.purple }],
+        picked_up: [{ status: 'in_transit', label: 'Mark In Transit', icon: 'ship', color: Colors.primary }],
         in_transit: [{ status: 'delivered', label: 'Mark Delivered', icon: 'check-circle', color: Colors.success }],
     };
 
@@ -78,7 +79,7 @@ export default function AdminOrderDetail() {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                    <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+                    <ArrowLeft size={24} color={Colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Order Detail</Text>
                 <View style={{ width: 44 }} />
@@ -98,20 +99,20 @@ export default function AdminOrderDetail() {
                 {/* Customer Info */}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Customer</Text>
-                    <InfoRow icon="account" label="Name" value={`${order.customer_first_name} ${order.customer_last_name}`} />
+                    <InfoRow icon="user" label="Name" value={`${order.customer_first_name} ${order.customer_last_name}`} />
                     <InfoRow icon="phone" label="Phone" value={order.customer_phone} />
-                    <InfoRow icon="email" label="Email" value={order.customer_email} />
+                    <InfoRow icon="mail" label="Email" value={order.customer_email} />
                 </View>
 
                 {/* Item Details */}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Item Details</Text>
-                    <InfoRow icon="package-variant-closed" label="Description" value={order.item_description} />
-                    <InfoRow icon="layers-outline" label="Quantity" value={order.quantity?.toString()} />
+                    <InfoRow icon="package" label="Description" value={order.item_description} />
+                    <InfoRow icon="layers" label="Quantity" value={order.quantity?.toString()} />
                     <InfoRow icon="weight" label="Weight" value={order.weight_estimate} />
                     {order.special_instructions && (
                         <View style={styles.instructionBox}>
-                            <MaterialCommunityIcons name="file-document" size={16} color={Colors.warning} />
+                            <FileText size={16} color={Colors.warning} />
                             <Text style={styles.instructionText}>{order.special_instructions}</Text>
                         </View>
                     )}
@@ -120,9 +121,9 @@ export default function AdminOrderDetail() {
                 {/* Pickup & Delivery */}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Pickup & Delivery</Text>
-                    <InfoRow icon="map-marker" label="Pickup" value={`${order.pickup_address}${order.pickup_city ? `, ${order.pickup_city}` : ''}`} />
-                    <InfoRow icon="navigation-variant" label="Deliver To" value={`${order.delivery_address}${order.delivery_city ? `, ${order.delivery_city}` : ''}`} />
-                    <InfoRow icon="account" label="Receiver" value={order.receiver_name} />
+                    <InfoRow icon="map-pin" label="Pickup" value={`${order.pickup_address}${order.pickup_city ? `, ${order.pickup_city}` : ''}`} />
+                    <InfoRow icon="navigation" label="Deliver To" value={`${order.delivery_address}${order.delivery_city ? `, ${order.delivery_city}` : ''}`} />
+                    <InfoRow icon="user" label="Receiver" value={order.receiver_name} />
                     <InfoRow icon="phone" label="Receiver Phone" value={order.receiver_phone} />
                 </View>
 
@@ -163,14 +164,14 @@ export default function AdminOrderDetail() {
                                 style={[styles.actionBtn, { backgroundColor: action.color }]}
                                 onPress={() => updateStatus(action.status, action.status === 'pickup_scheduled' ? { pickup_date: pickupDate } : {})}
                             >
-                                <MaterialCommunityIcons name={action.icon} size={20} color={Colors.white} />
+                                <Icon name={action.icon} size={20} color={Colors.white} />
                                 <Text style={styles.actionText}>{action.label}</Text>
                             </TouchableOpacity>
                         ))}
 
                         {order.status === 'pending' && (
                             <TouchableOpacity style={styles.cancelBtn} onPress={() => updateStatus('cancelled')}>
-                                <MaterialCommunityIcons name="close-circle" size={20} color={Colors.error} />
+                                <XCircle size={20} color={Colors.error} />
                                 <Text style={styles.cancelText}>Reject Order</Text>
                             </TouchableOpacity>
                         )}

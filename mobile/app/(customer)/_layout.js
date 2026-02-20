@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Home, Ship, Package, Bell, User } from 'lucide-react-native';
 import { Colors, Fonts } from '../../constants/Colors';
 import { View, Platform } from 'react-native';
 
@@ -34,7 +34,7 @@ export default function CustomerLayout() {
                 options={{
                     title: 'Home',
                     tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
+                        <Home size={22} color={color} strokeWidth={focused ? 2.5 : 1.5} />
                     ),
                 }}
             />
@@ -43,7 +43,7 @@ export default function CustomerLayout() {
                 options={{
                     title: 'Trips',
                     tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons name={focused ? 'ferry' : 'ferry'} size={22} color={color} />
+                        <Ship size={22} color={color} strokeWidth={focused ? 2.5 : 1.5} />
                     ),
                 }}
             />
@@ -52,7 +52,7 @@ export default function CustomerLayout() {
                 options={{
                     title: 'My Orders',
                     tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons name={focused ? 'package-variant' : 'package-variant-closed'} size={22} color={color} />
+                        <Package size={22} color={color} strokeWidth={focused ? 2.5 : 1.5} />
                     ),
                 }}
             />
@@ -61,7 +61,7 @@ export default function CustomerLayout() {
                 options={{
                     title: 'Alerts',
                     tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons name={focused ? 'bell' : 'bell-outline'} size={22} color={color} />
+                        <Bell size={22} color={color} strokeWidth={focused ? 2.5 : 1.5} />
                     ),
                 }}
             />
@@ -70,7 +70,7 @@ export default function CustomerLayout() {
                 options={{
                     title: 'Profile',
                     tabBarIcon: ({ color, focused }) => (
-                        <MaterialCommunityIcons name={focused ? 'account' : 'account-outline'} size={22} color={color} />
+                        <User size={22} color={color} strokeWidth={focused ? 2.5 : 1.5} />
                     ),
                 }}
             />

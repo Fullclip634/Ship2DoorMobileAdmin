@@ -6,7 +6,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Icon from '../../components/LucideIcon';
+import { ChevronRight } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { EmptyState } from '../../components/UIComponents';
@@ -53,11 +54,11 @@ export default function CustomerNotifications() {
 
     const getIcon = (type) => {
         const icons = {
-            trip_update: { name: 'ferry', color: Colors.info },
-            order_update: { name: 'package-variant', color: Colors.primary },
+            trip_update: { name: 'ship', color: Colors.info },
+            order_update: { name: 'package', color: Colors.primary },
             pickup_schedule: { name: 'calendar-check', color: Colors.indigo },
-            delay: { name: 'alert', color: Colors.warning },
-            announcement: { name: 'bullhorn', color: Colors.success },
+            delay: { name: 'alert-triangle', color: Colors.warning },
+            announcement: { name: 'megaphone', color: Colors.success },
             general: { name: 'bell', color: Colors.textSecondary },
         };
         return icons[type] || icons.general;
@@ -97,7 +98,7 @@ export default function CustomerNotifications() {
                 activeOpacity={0.6}
             >
                 <View style={[styles.iconWrap, { backgroundColor: icon.color + '10' }]}>
-                    <MaterialCommunityIcons name={icon.name} size={22} color={icon.color} />
+                    <Icon name={icon.name} size={22} color={icon.color} />
                     {!item.is_read && <View style={styles.unreadDot} />}
                 </View>
                 <View style={{ flex: 1 }}>
@@ -110,7 +111,7 @@ export default function CustomerNotifications() {
                     <Text style={styles.notifTime}>{timeAgo(item.created_at)}</Text>
                 </View>
                 {isNavigable(item.type) && item.reference_id && (
-                    <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.textLight} style={{ alignSelf: 'center' }} />
+                    <ChevronRight size={18} color={Colors.textLight} style={{ alignSelf: 'center' }} />
                 )}
             </TouchableOpacity>
         );
@@ -140,7 +141,7 @@ export default function CustomerNotifications() {
                 renderItem={renderNotification}
                 contentContainerStyle={styles.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
-                ListEmptyComponent={<EmptyState icon="notifications-off-outline" title="No Notifications" message="You'll see updates about your orders and trips here." />}
+                ListEmptyComponent={<EmptyState icon="bell-off" title="No Notifications" message="You'll see updates about your orders and trips here." />}
             />
         </SafeAreaView>
     );

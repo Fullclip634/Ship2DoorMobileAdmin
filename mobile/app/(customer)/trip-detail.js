@@ -5,7 +5,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ArrowLeft, Calendar, Flag, PlusCircle } from 'lucide-react-native';
+import Icon from '../../components/LucideIcon';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, LoadingScreen } from '../../components/UIComponents';
@@ -40,11 +41,11 @@ export default function TripDetail() {
 
     const statusSteps = [
         { key: 'upcoming', label: 'Upcoming', icon: 'calendar' },
-        { key: 'pickup_phase', label: 'Pickup Phase', icon: 'package-variant' },
-        { key: 'in_transit', label: 'In Transit', icon: 'truck-delivery' },
-        { key: 'boarding_ship', label: 'Boarding Ship', icon: 'ferry' },
+        { key: 'pickup_phase', label: 'Pickup Phase', icon: 'package' },
+        { key: 'in_transit', label: 'In Transit', icon: 'truck' },
+        { key: 'boarding_ship', label: 'Boarding Ship', icon: 'ship' },
         { key: 'at_sea', label: 'At Sea', icon: 'waves' },
-        { key: 'arrived', label: 'Arrived', icon: 'map-marker' },
+        { key: 'arrived', label: 'Arrived', icon: 'map-pin' },
         { key: 'delivering', label: 'Delivering', icon: 'bike' },
         { key: 'completed', label: 'Completed', icon: 'check-circle' },
     ];
@@ -56,7 +57,7 @@ export default function TripDetail() {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                    <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+                    <ArrowLeft size={24} color={Colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Trip Details</Text>
                 <View style={{ width: 44 }} />
@@ -72,7 +73,7 @@ export default function TripDetail() {
 
                     <View style={styles.dateSection}>
                         <View style={styles.dateItem}>
-                            <MaterialCommunityIcons name="calendar" size={20} color={Colors.primary} />
+                            <Calendar size={20} color={Colors.primary} />
                             <View>
                                 <Text style={styles.dateLabel}>Departure</Text>
                                 <Text style={styles.dateValue}>{formatDate(trip.departure_date)}</Text>
@@ -80,7 +81,7 @@ export default function TripDetail() {
                         </View>
                         {trip.estimated_arrival && (
                             <View style={styles.dateItem}>
-                                <MaterialCommunityIcons name="flag" size={20} color={Colors.success} />
+                                <Flag size={20} color={Colors.success} />
                                 <View>
                                     <Text style={styles.dateLabel}>Est. Arrival</Text>
                                     <Text style={styles.dateValue}>{formatDate(trip.estimated_arrival)}</Text>
@@ -108,7 +109,7 @@ export default function TripDetail() {
                                 <View key={step.key} style={styles.stepRow}>
                                     <View style={styles.stepIndicator}>
                                         <View style={[styles.stepDot, isActive && styles.stepDotActive, isCurrent && styles.stepDotCurrent]}>
-                                            <MaterialCommunityIcons name={step.icon} size={14} color={isActive ? Colors.white : Colors.textLight} />
+                                            <Icon name={step.icon} size={14} color={isActive ? Colors.white : Colors.textLight} />
                                         </View>
                                         {i < statusSteps.length - 1 && (
                                             <View style={[styles.stepLine, isActive && styles.stepLineActive]} />
@@ -130,7 +131,7 @@ export default function TripDetail() {
                         onPress={() => router.push({ pathname: '/(customer)/book-shipment', params: { tripId: trip.id, direction: trip.direction, departureDate: trip.departure_date } })}
                         activeOpacity={0.8}
                     >
-                        <MaterialCommunityIcons name="plus-circle-outline" size={22} color={Colors.white} />
+                        <PlusCircle size={22} color={Colors.white} />
                         <Text style={styles.bookButtonText}>Book Shipment on This Trip</Text>
                     </TouchableOpacity>
                 )}

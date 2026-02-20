@@ -1,33 +1,33 @@
 import { View, Text, StyleSheet, Image, ActivityIndicator, Pressable } from 'react-native';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Icon from './LucideIcon';
 
 export const StatusBadge = ({ status, size = 'md' }) => {
     const statusConfig = {
         // Trip statuses
-        upcoming: { label: 'Upcoming', color: Colors.info, bg: Colors.infoLight, icon: 'calendar-outline' },
-        pickup_phase: { label: 'Pickup Phase', color: Colors.warning, bg: Colors.warningLight, icon: 'package-variant' },
-        in_transit: { label: 'In Transit', color: Colors.primaryDark, bg: Colors.primaryFaded, icon: 'truck-delivery' },
-        boarding_ship: { label: 'Boarding Ship', color: Colors.indigo, bg: Colors.indigoLight, icon: 'ferry' },
+        upcoming: { label: 'Upcoming', color: Colors.info, bg: Colors.infoLight, icon: 'calendar' },
+        pickup_phase: { label: 'Pickup Phase', color: Colors.warning, bg: Colors.warningLight, icon: 'package' },
+        in_transit: { label: 'In Transit', color: Colors.primaryDark, bg: Colors.primaryFaded, icon: 'truck' },
+        boarding_ship: { label: 'Boarding Ship', color: Colors.indigo, bg: Colors.indigoLight, icon: 'ship' },
         at_sea: { label: 'At Sea', color: Colors.sky, bg: Colors.skyLight, icon: 'waves' },
-        arrived: { label: 'Arrived', color: Colors.success, bg: Colors.successLight, icon: 'map-marker-check-outline' },
+        arrived: { label: 'Arrived', color: Colors.success, bg: Colors.successLight, icon: 'map-pin-check' },
         delivering: { label: 'Delivering', color: Colors.purple, bg: Colors.purpleLight, icon: 'bike' },
-        completed: { label: 'Completed', color: Colors.success, bg: Colors.successLight, icon: 'check-circle-outline' },
-        cancelled: { label: 'Cancelled', color: Colors.error, bg: Colors.errorLight, icon: 'close-circle-outline' },
+        completed: { label: 'Completed', color: Colors.success, bg: Colors.successLight, icon: 'check-circle' },
+        cancelled: { label: 'Cancelled', color: Colors.error, bg: Colors.errorLight, icon: 'x-circle' },
         // Order statuses
-        pending: { label: 'Pending', color: Colors.warning, bg: Colors.warningLight, icon: 'clock-outline' },
-        confirmed: { label: 'Confirmed', color: Colors.info, bg: Colors.infoLight, icon: 'check-outline' },
-        pickup_scheduled: { label: 'Pickup Scheduled', color: Colors.indigo, bg: Colors.indigoLight, icon: 'calendar-check-outline' },
-        picked_up: { label: 'Picked Up', color: Colors.purple, bg: Colors.purpleLight, icon: 'package-variant-closed-check' },
-        delivered: { label: 'Delivered', color: Colors.success, bg: Colors.successLight, icon: 'check-circle-outline' },
+        pending: { label: 'Pending', color: Colors.warning, bg: Colors.warningLight, icon: 'clock' },
+        confirmed: { label: 'Confirmed', color: Colors.info, bg: Colors.infoLight, icon: 'check' },
+        pickup_scheduled: { label: 'Pickup Scheduled', color: Colors.indigo, bg: Colors.indigoLight, icon: 'calendar-check' },
+        picked_up: { label: 'Picked Up', color: Colors.purple, bg: Colors.purpleLight, icon: 'package-check' },
+        delivered: { label: 'Delivered', color: Colors.success, bg: Colors.successLight, icon: 'check-circle' },
     };
 
-    const config = statusConfig[status] || { label: status, color: Colors.textSecondary, bg: Colors.borderLight, icon: 'help-circle-outline' };
+    const config = statusConfig[status] || { label: status, color: Colors.textSecondary, bg: Colors.borderLight, icon: 'help-circle' };
     const isSmall = size === 'sm';
 
     return (
         <View style={[styles.badge, { backgroundColor: config.bg }, isSmall && styles.badgeSmall]}>
-            <MaterialCommunityIcons name={config.icon} size={isSmall ? 12 : 14} color={config.color} />
+            <Icon name={config.icon} size={isSmall ? 12 : 14} color={config.color} strokeWidth={2.5} />
             <Text style={[styles.badgeText, { color: config.color }, isSmall && styles.badgeTextSmall]}>
                 {config.label}
             </Text>
@@ -39,10 +39,11 @@ export const DirectionBadge = ({ direction }) => {
     const isToManila = direction === 'bohol_to_manila';
     return (
         <View style={[styles.directionBadge, { backgroundColor: isToManila ? Colors.secondaryFaded : Colors.primaryFaded }]}>
-            <MaterialCommunityIcons
+            <Icon
                 name={isToManila ? 'arrow-up' : 'arrow-down'}
                 size={14}
                 color={isToManila ? Colors.secondary : Colors.primary}
+                strokeWidth={2.5}
             />
             <Text style={[styles.directionText, { color: isToManila ? Colors.secondary : Colors.primary }]}>
                 {isToManila ? 'Bohol to Manila' : 'Manila to Bohol'}
@@ -54,7 +55,7 @@ export const DirectionBadge = ({ direction }) => {
 export const EmptyState = ({ icon, title, message }) => (
     <View style={styles.emptyContainer}>
         <View style={styles.emptyIconWrap}>
-            <MaterialCommunityIcons name={icon || 'package-variant'} size={48} color={Colors.textLight} />
+            <Icon name={icon || 'package'} size={48} color={Colors.textLight} strokeWidth={1.5} />
         </View>
         <Text style={styles.emptyTitle}>{title}</Text>
         {message && <Text style={styles.emptyMessage}>{message}</Text>}
@@ -70,7 +71,7 @@ export const LoadingScreen = () => (
 export const StatCard = ({ icon, label, value, color }) => (
     <View style={styles.statCard}>
         <View style={[styles.statIconWrap, { backgroundColor: (color || Colors.primary) + '15' }]}>
-            <MaterialCommunityIcons name={icon} size={22} color={color || Colors.primary} />
+            <Icon name={icon} size={22} color={color || Colors.primary} />
         </View>
         <Text style={styles.statValue}>{value}</Text>
         <Text style={styles.statLabel}>{label}</Text>
@@ -95,13 +96,13 @@ export const MenuItem = ({ icon, iconBg, label, subtitle, onPress, trailing, dan
         onPress={onPress}
     >
         <View style={[styles.menuIcon, { backgroundColor: iconBg || Colors.secondaryFaded }]}>
-            <MaterialCommunityIcons name={icon} size={19} color={danger ? Colors.error : Colors.white} />
+            <Icon name={icon} size={19} color={danger ? Colors.error : Colors.white} />
         </View>
         <View style={styles.menuContent}>
             <Text style={[styles.menuLabel, danger && { color: Colors.error }]}>{label}</Text>
             {subtitle ? <Text style={styles.menuSub}>{subtitle}</Text> : null}
         </View>
-        {trailing !== undefined ? trailing : <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.textLight} />}
+        {trailing !== undefined ? trailing : <Icon name="chevron-right" size={18} color={Colors.textLight} />}
     </Pressable>
 );
 

@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { User, Calendar, ArrowDown, ArrowUp, ChevronRight } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, EmptyState } from '../../components/UIComponents';
@@ -64,26 +64,25 @@ export default function CustomerOrders() {
             <Text style={styles.itemDesc} numberOfLines={1}>{item.item_description}</Text>
             <View style={styles.cardMeta}>
                 <View style={styles.metaItem}>
-                    <MaterialCommunityIcons name="account-outline" size={14} color={Colors.textSecondary} />
+                    <User size={14} color={Colors.textSecondary} />
                     <Text style={styles.metaText}>{item.receiver_name}</Text>
                 </View>
                 <View style={styles.metaItem}>
-                    <MaterialCommunityIcons name="calendar-outline" size={14} color={Colors.textSecondary} />
+                    <Calendar size={14} color={Colors.textSecondary} />
                     <Text style={styles.metaText}>{formatDate(item.created_at)}</Text>
                 </View>
             </View>
             <View style={styles.cardFooter}>
                 <View style={styles.dirRow}>
-                    <MaterialCommunityIcons
-                        name={item.direction === 'manila_to_bohol' ? 'arrow-down' : 'arrow-up'}
-                        size={14}
-                        color={Colors.textSecondary}
-                    />
+                    {item.direction === 'manila_to_bohol'
+                        ? <ArrowDown size={14} color={Colors.textSecondary} />
+                        : <ArrowUp size={14} color={Colors.textSecondary} />
+                    }
                     <Text style={styles.dirText}>
                         {item.direction === 'manila_to_bohol' ? 'Manila to Bohol' : 'Bohol to Manila'}
                     </Text>
                 </View>
-                <MaterialCommunityIcons name="chevron-right" size={18} color={Colors.textLight} />
+                <ChevronRight size={18} color={Colors.textLight} />
             </View>
         </TouchableOpacity>
     );
@@ -107,7 +106,7 @@ export default function CustomerOrders() {
                 renderItem={renderOrder}
                 contentContainerStyle={styles.list}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
-                ListEmptyComponent={<EmptyState icon="package-variant-closed" title="No Orders Yet" message="Book your first shipment from the Trips tab!" />}
+                ListEmptyComponent={<EmptyState icon="package" title="No Orders Yet" message="Book your first shipment from the Trips tab!" />}
             />
         </SafeAreaView>
     );

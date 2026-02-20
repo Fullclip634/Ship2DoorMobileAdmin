@@ -7,7 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Icon from '../../components/LucideIcon';
+import { Clock } from 'lucide-react-native';
 import { MenuItem, MenuDivider } from '../../components/UIComponents';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
@@ -16,7 +17,7 @@ const ProfileField = ({ label, icon, value, onChangeText, editable, ...props }) 
     <View style={styles.fieldGroup}>
         <Text style={styles.fieldLabel}>{label}</Text>
         <View style={[styles.fieldInput, !editable && styles.fieldInputDisabled]}>
-            <MaterialCommunityIcons name={icon} size={18} color={Colors.textLight} />
+            <Icon name={icon} size={18} color={Colors.textLight} />
             <TextInput
                 style={[styles.fieldTextInput, !editable && { color: Colors.textSecondary }]}
                 value={value}
@@ -57,7 +58,7 @@ export default function CustomerProfile() {
                         <Text style={styles.userName}>{user?.first_name} {user?.last_name}</Text>
                         <Text style={styles.userEmail}>{user?.email}</Text>
                         <View style={styles.memberSince}>
-                            <MaterialCommunityIcons name="clock-outline" size={12} color={Colors.textLight} />
+                            <Clock size={12} color={Colors.textLight} />
                             <Text style={styles.memberText}>Member since {new Date(user?.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</Text>
                         </View>
                     </View>
@@ -67,17 +68,17 @@ export default function CustomerProfile() {
                     <Text style={[styles.groupLabel, { marginTop: Spacing.lg }]}>MY ACTIVITY</Text>
                     <View style={styles.menuCard}>
                         <MenuItem
-                            icon="package-variant-closed" iconBg={Colors.secondary} label="My Orders" subtitle="View your shipment history"
+                            icon="package" iconBg={Colors.secondary} label="My Orders" subtitle="View your shipment history"
                             onPress={() => router.push('/(customer)/orders')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="ferry" iconBg={Colors.info} label="Available Trips" subtitle="Browse upcoming cargo trips"
+                            icon="ship" iconBg={Colors.info} label="Available Trips" subtitle="Browse upcoming cargo trips"
                             onPress={() => router.push('/(customer)/trips')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="bell-outline" iconBg={Colors.amber} label="Notifications" subtitle="Order updates and alerts"
+                            icon="bell" iconBg={Colors.amber} label="Notifications" subtitle="Order updates and alerts"
                             onPress={() => router.push('/(customer)/notifications')}
                         />
                     </View>
@@ -86,12 +87,12 @@ export default function CustomerProfile() {
                     <Text style={styles.groupLabel}>ACCOUNT SETTINGS</Text>
                     <View style={styles.menuCard}>
                         <MenuItem
-                            icon="account-outline" iconBg={Colors.primary} label="Personal Information" subtitle="Update name, phone, and address"
+                            icon="user" iconBg={Colors.primary} label="Personal Information" subtitle="Update name, phone, and address"
                             onPress={() => router.push('/(customer)/personal-info')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="shield-check-outline" iconBg={Colors.secondary} label="Change Password" subtitle="Update your account password"
+                            icon="shield-check" iconBg={Colors.secondary} label="Change Password" subtitle="Update your account password"
                             onPress={() => router.push('/change-password')}
                         />
                     </View>
@@ -100,17 +101,17 @@ export default function CustomerProfile() {
                     <Text style={styles.groupLabel}>SUPPORT & ABOUT</Text>
                     <View style={styles.menuCard}>
                         <MenuItem
-                            icon="help-circle-outline" iconBg={Colors.purple} label="Help & FAQ" subtitle="Get answers to common questions"
+                            icon="help-circle" iconBg={Colors.purple} label="Help & FAQ" subtitle="Get answers to common questions"
                             onPress={() => Alert.alert('Help & FAQ', 'Contact us at support@ship2door.com')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="chat-processing-outline" iconBg={Colors.cyan} label="Contact Support" subtitle="Chat with our support bot"
+                            icon="message-circle" iconBg={Colors.cyan} label="Contact Support" subtitle="Chat with our support bot"
                             onPress={() => router.push('/(customer)/support-chat')}
                         />
                         <MenuDivider />
                         <MenuItem
-                            icon="file-document-outline" iconBg={Colors.textSecondary} label="Terms & Privacy" subtitle="Read our policies"
+                            icon="file-text" iconBg={Colors.textSecondary} label="Terms & Privacy" subtitle="Read our policies"
                             onPress={() => Alert.alert('Terms & Privacy', 'By using this app, you agree to our terms.')}
                         />
                     </View>
@@ -118,7 +119,7 @@ export default function CustomerProfile() {
                     {/* ── Sign Out ── */}
                     <View style={[styles.menuCard, { marginTop: Spacing.md }]}>
                         <MenuItem
-                            icon="logout" iconBg={Colors.errorLight} label="Sign Out" danger
+                            icon="log-out" iconBg={Colors.errorLight} label="Sign Out" danger
                             onPress={handleLogout} trailing={null}
                         />
                     </View>

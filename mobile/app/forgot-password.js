@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ArrowLeft, Mail, Grid3X3, LockOpen, Lock, Eye, EyeOff } from 'lucide-react-native';
 import api from '../services/api';
 import { API_ENDPOINTS } from '../constants/Api';
 
@@ -89,13 +89,13 @@ export default function ForgotPasswordScreen() {
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                     {/* Back */}
                     <TouchableOpacity style={styles.backBtn} onPress={() => step > 1 ? setStep(step - 1) : router.back()}>
-                        <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+                        <ArrowLeft size={24} color={Colors.text} />
                     </TouchableOpacity>
 
                     {/* Header */}
                     <View style={styles.header}>
                         <View style={styles.iconCircle}>
-                            <MaterialCommunityIcons name={step === 1 ? 'email-outline' : step === 2 ? 'dialpad' : 'lock-open-outline'} size={32} color={Colors.primary} />
+                            {step === 1 ? <Mail size={32} color={Colors.primary} /> : step === 2 ? <Grid3X3 size={32} color={Colors.primary} /> : <LockOpen size={32} color={Colors.primary} />}
                         </View>
                         <Text style={styles.title}>
                             {step === 1 ? 'Forgot Password' : step === 2 ? 'Enter Code' : 'New Password'}
@@ -115,7 +115,7 @@ export default function ForgotPasswordScreen() {
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Email Address</Text>
                                 <View style={styles.inputContainer}>
-                                    <MaterialCommunityIcons name="email-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <Mail size={20} color={Colors.textLight} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Enter your email"
@@ -140,7 +140,7 @@ export default function ForgotPasswordScreen() {
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>6-Digit Code</Text>
                                 <View style={styles.inputContainer}>
-                                    <MaterialCommunityIcons name="dialpad" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <Grid3X3 size={20} color={Colors.textLight} style={styles.inputIcon} />
                                     <TextInput
                                         style={[styles.input, { letterSpacing: 6, fontWeight: '700', fontSize: 20 }]}
                                         placeholder="000000"
@@ -156,7 +156,7 @@ export default function ForgotPasswordScreen() {
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>New Password</Text>
                                 <View style={styles.inputContainer}>
-                                    <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <Lock size={20} color={Colors.textLight} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholder="At least 6 characters"
@@ -166,7 +166,7 @@ export default function ForgotPasswordScreen() {
                                         secureTextEntry={!showPassword}
                                     />
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                                        <MaterialCommunityIcons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={Colors.textLight} />
+                                        {showPassword ? <EyeOff size={20} color={Colors.textLight} /> : <Eye size={20} color={Colors.textLight} />}
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -174,7 +174,7 @@ export default function ForgotPasswordScreen() {
                             <View style={styles.inputGroup}>
                                 <Text style={styles.label}>Confirm Password</Text>
                                 <View style={styles.inputContainer}>
-                                    <MaterialCommunityIcons name="lock-outline" size={20} color={Colors.textLight} style={styles.inputIcon} />
+                                    <Lock size={20} color={Colors.textLight} style={styles.inputIcon} />
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Re-enter new password"

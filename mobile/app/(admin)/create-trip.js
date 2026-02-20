@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowDown, ArrowUp, Calendar, ChevronDown, Flag, Ship } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 
@@ -90,7 +90,7 @@ export default function CreateTrip() {
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <View style={styles.header}>
                     <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                        <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+                        <ArrowLeft size={24} color={Colors.text} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Create Trip</Text>
                     <View style={{ width: 44 }} />
@@ -104,14 +104,14 @@ export default function CreateTrip() {
                             style={[styles.dirBtn, form.direction === 'manila_to_bohol' && styles.dirBtnActive]}
                             onPress={() => updateField('direction', 'manila_to_bohol')}
                         >
-                            <MaterialCommunityIcons name="arrow-down" size={18} color={form.direction === 'manila_to_bohol' ? Colors.white : Colors.primary} />
+                            <ArrowDown size={18} color={form.direction === 'manila_to_bohol' ? Colors.white : Colors.primary} />
                             <Text style={[styles.dirText, form.direction === 'manila_to_bohol' && styles.dirTextActive]}>Manila to Bohol</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.dirBtn, form.direction === 'bohol_to_manila' && styles.dirBtnActiveSecondary]}
                             onPress={() => updateField('direction', 'bohol_to_manila')}
                         >
-                            <MaterialCommunityIcons name="arrow-up" size={18} color={form.direction === 'bohol_to_manila' ? Colors.white : Colors.secondary} />
+                            <ArrowUp size={18} color={form.direction === 'bohol_to_manila' ? Colors.white : Colors.secondary} />
                             <Text style={[styles.dirText, form.direction === 'bohol_to_manila' && styles.dirTextActive]}>Bohol to Manila</Text>
                         </TouchableOpacity>
                     </View>
@@ -126,12 +126,12 @@ export default function CreateTrip() {
                             activeOpacity={0.7}
                         >
                             <View style={styles.dateIconWrap}>
-                                <MaterialCommunityIcons name="calendar" size={18} color={Colors.primary} />
+                                <Calendar size={18} color={Colors.primary} />
                             </View>
                             <Text style={[styles.dateText, !form.departure_date && styles.datePlaceholder]}>
                                 {form.departure_date ? formatDateForDisplay(form.departure_date) : 'Tap to select departure date'}
                             </Text>
-                            <MaterialCommunityIcons name="chevron-down" size={16} color={Colors.textLight} />
+                            <ChevronDown size={16} color={Colors.textLight} />
                         </TouchableOpacity>
                     </View>
 
@@ -153,12 +153,12 @@ export default function CreateTrip() {
                             activeOpacity={0.7}
                         >
                             <View style={[styles.dateIconWrap, { backgroundColor: Colors.secondaryFaded }]}>
-                                <MaterialCommunityIcons name="flag" size={18} color={Colors.secondary} />
+                                <Flag size={18} color={Colors.secondary} />
                             </View>
                             <Text style={[styles.dateText, !form.estimated_arrival && styles.datePlaceholder]}>
                                 {form.estimated_arrival ? formatDateForDisplay(form.estimated_arrival) : 'Tap to select arrival date'}
                             </Text>
-                            <MaterialCommunityIcons name="chevron-down" size={16} color={Colors.textLight} />
+                            <ChevronDown size={16} color={Colors.textLight} />
                         </TouchableOpacity>
                     </View>
 
@@ -199,7 +199,7 @@ export default function CreateTrip() {
                             <ActivityIndicator color={Colors.white} />
                         ) : (
                             <>
-                                <MaterialCommunityIcons name="ferry" size={22} color={Colors.white} />
+                                <Ship size={22} color={Colors.white} />
                                 <Text style={styles.submitText}>Create Trip & Notify Customers</Text>
                             </>
                         )}

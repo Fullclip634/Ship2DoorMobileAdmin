@@ -7,7 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MessageCircle, Ship, ArrowLeft, Send } from 'lucide-react-native';
 import { getBotResponse, getWelcomeMessage } from '../../services/chatbot';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
@@ -65,7 +65,7 @@ const TypingIndicator = () => {
     return (
         <View style={styles.typingRow}>
             <View style={styles.botAvatarSmall}>
-                <MaterialCommunityIcons name="chat-processing" size={14} color={Colors.white} />
+                <MessageCircle size={14} color={Colors.white} />
             </View>
             <View style={styles.typingBubble}>
                 {[dot1, dot2, dot3].map((dot, i) => (
@@ -102,7 +102,7 @@ const MessageBubble = ({ message }) => {
         <View style={[styles.bubbleRow, isBot ? styles.bubbleRowBot : styles.bubbleRowUser]}>
             {isBot && (
                 <View style={styles.botAvatar}>
-                    <MaterialCommunityIcons name="ferry" size={16} color={Colors.white} />
+                    <Ship size={16} color={Colors.white} />
                 </View>
             )}
             <View style={[styles.bubble, isBot ? styles.bubbleBot : styles.bubbleUser]}>
@@ -190,11 +190,11 @@ export default function SupportChatScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-                    <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+                    <ArrowLeft size={24} color={Colors.text} />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
                     <View style={styles.headerAvatar}>
-                        <MaterialCommunityIcons name="ferry" size={18} color={Colors.white} />
+                        <Ship size={18} color={Colors.white} />
                     </View>
                     <View>
                         <Text style={styles.headerTitle}>Ship2Door Support</Text>
@@ -263,7 +263,7 @@ export default function SupportChatScreen() {
                         disabled={!inputText.trim()}
                         activeOpacity={0.7}
                     >
-                        <MaterialCommunityIcons name="send" size={20} color={Colors.white} />
+                        <Send size={20} color={Colors.white} />
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
