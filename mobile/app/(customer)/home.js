@@ -11,6 +11,7 @@ import { Bell, Ship, Package, Megaphone, Calendar, Flag } from 'lucide-react-nat
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, EmptyState, SectionHeader } from '../../components/UIComponents';
+import AnimatedPressable from '../../components/AnimatedPressable';
 
 export default function CustomerHome() {
     const { user } = useAuth();
@@ -82,24 +83,24 @@ export default function CustomerHome() {
 
                 {/* Quick Actions */}
                 <View style={styles.quickActions}>
-                    <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/(customer)/trips')}>
+                    <AnimatedPressable scaleTo={0.96} style={styles.quickCard} onPress={() => router.push('/(customer)/trips')}>
                         <View style={[styles.quickIcon, { backgroundColor: Colors.primaryFaded }]}>
                             <Ship size={24} color={Colors.primary} />
                         </View>
                         <Text style={styles.quickLabel}>View Trips</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/(customer)/orders')}>
+                    </AnimatedPressable>
+                    <AnimatedPressable scaleTo={0.96} style={styles.quickCard} onPress={() => router.push('/(customer)/orders')}>
                         <View style={[styles.quickIcon, { backgroundColor: Colors.secondaryFaded }]}>
                             <Package size={24} color={Colors.secondary} />
                         </View>
                         <Text style={styles.quickLabel}>My Orders</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickCard} onPress={() => router.push('/(customer)/notifications')}>
+                    </AnimatedPressable>
+                    <AnimatedPressable scaleTo={0.96} style={styles.quickCard} onPress={() => router.push('/(customer)/notifications')}>
                         <View style={[styles.quickIcon, { backgroundColor: Colors.successLight }]}>
                             <Bell size={24} color={Colors.success} />
                         </View>
                         <Text style={styles.quickLabel}>Alerts</Text>
-                    </TouchableOpacity>
+                    </AnimatedPressable>
                 </View>
 
                 {/* Announcements */}
@@ -131,11 +132,10 @@ export default function CustomerHome() {
                     <EmptyState icon="ship" title="No Upcoming Trips" message="Check back later for new trip schedules." />
                 ) : (
                     upcomingTrips.map((trip) => (
-                        <TouchableOpacity
+                        <AnimatedPressable
                             key={trip.id}
                             style={styles.tripCard}
                             onPress={() => router.push({ pathname: '/(customer)/trip-detail', params: { id: trip.id } })}
-                            activeOpacity={0.7}
                         >
                             <View style={styles.tripTop}>
                                 <DirectionBadge direction={trip.direction} />
@@ -156,7 +156,7 @@ export default function CustomerHome() {
                             <View style={styles.tripFooter}>
                                 <Text style={styles.bookNow}>Book Shipment</Text>
                             </View>
-                        </TouchableOpacity>
+                        </AnimatedPressable>
                     ))
                 )}
 
@@ -169,11 +169,10 @@ export default function CustomerHome() {
                             onAction={() => router.push('/(customer)/orders')}
                         />
                         {activeOrders.map((order) => (
-                            <TouchableOpacity
+                            <AnimatedPressable
                                 key={order.id}
                                 style={styles.orderCard}
                                 onPress={() => router.push({ pathname: '/(customer)/order-detail', params: { id: order.id } })}
-                                activeOpacity={0.7}
                             >
                                 <View style={styles.orderTop}>
                                     <Text style={styles.orderNumber}>{order.order_number}</Text>
@@ -183,7 +182,7 @@ export default function CustomerHome() {
                                 <Text style={styles.orderMeta}>
                                     {order.receiver_name} • {formatDate(order.created_at)}
                                 </Text>
-                            </TouchableOpacity>
+                            </AnimatedPressable>
                         ))}
                     </>
                 )}
@@ -209,14 +208,14 @@ const styles = StyleSheet.create({
     },
     greeting: {
         fontSize: Fonts.sizes.xxl,
-        fontWeight: '800',
+        fontFamily: Fonts.extraBold,
         color: Colors.text,
         letterSpacing: -0.5,
     },
     headerSub: {
         fontSize: Fonts.sizes.sm,
         color: Colors.textSecondary,
-        fontWeight: '500',
+        fontFamily: Fonts.medium,
         marginTop: 2,
     },
     notifButton: {
@@ -227,10 +226,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 4,
     },
     notifBadge: {
         position: 'absolute',
@@ -243,11 +242,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 4,
+        borderWidth: 2,
+        borderColor: Colors.white, // Pop badge effect
     },
     notifBadgeText: {
         color: Colors.white,
         fontSize: 10,
-        fontWeight: '700',
+        fontFamily: Fonts.bold,
     },
     quickActions: {
         flexDirection: 'row',
@@ -262,10 +263,10 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.lg,
         alignItems: 'center',
         shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+        elevation: 3,
     },
     quickIcon: {
         width: 48,
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
     },
     quickLabel: {
         fontSize: Fonts.sizes.xs,
-        fontWeight: '600',
+        fontFamily: Fonts.semiBold,
         color: Colors.text,
     },
     announcementCard: {
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
         borderRadius: BorderRadius.md,
         padding: Spacing.lg,
         gap: Spacing.md,
-        borderLeftWidth: 3,
+        borderLeftWidth: 4,
         borderLeftColor: Colors.primary,
     },
     announcementIcon: {
@@ -298,34 +299,41 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         alignItems: 'center',
         justifyContent: 'center',
+        shadowColor: Colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 2,
     },
     announcementTitle: {
         fontSize: Fonts.sizes.sm,
-        fontWeight: '700',
+        fontFamily: Fonts.bold,
         color: Colors.text,
         marginBottom: 2,
     },
     announcementMsg: {
         fontSize: Fonts.sizes.sm,
         color: Colors.textSecondary,
+        fontFamily: Fonts.regular,
         lineHeight: 18,
     },
     announcementDate: {
         fontSize: Fonts.sizes.xs,
         color: Colors.textLight,
-        marginTop: 4,
+        fontFamily: Fonts.medium,
+        marginTop: 6,
     },
     tripCard: {
         backgroundColor: Colors.white,
         marginHorizontal: Spacing.xl,
         marginBottom: Spacing.md,
         borderRadius: BorderRadius.lg,
-        padding: Spacing.lg,
+        padding: Spacing.xl, // Increased padding
         shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.06,
+        shadowRadius: 16,
+        elevation: 4,
     },
     tripTop: {
         flexDirection: 'row',
@@ -334,18 +342,18 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.md,
     },
     tripInfo: {
-        gap: 6,
-        marginBottom: Spacing.md,
+        gap: 8,
+        marginBottom: Spacing.lg,
     },
     tripDateRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
     },
     tripDate: {
         fontSize: Fonts.sizes.sm,
         color: Colors.textSecondary,
-        fontWeight: '500',
+        fontFamily: Fonts.medium,
     },
     tripFooter: {
         borderTopWidth: 1,
@@ -354,20 +362,21 @@ const styles = StyleSheet.create({
     },
     bookNow: {
         fontSize: Fonts.sizes.sm,
-        fontWeight: '700',
+        fontFamily: Fonts.bold,
         color: Colors.primary,
+        letterSpacing: 0.2,
     },
     orderCard: {
         backgroundColor: Colors.white,
         marginHorizontal: Spacing.xl,
         marginBottom: Spacing.md,
         borderRadius: BorderRadius.lg,
-        padding: Spacing.lg,
+        padding: Spacing.xl, // Increased padding
         shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.06,
+        shadowRadius: 16,
+        elevation: 4,
     },
     orderTop: {
         flexDirection: 'row',
@@ -377,17 +386,19 @@ const styles = StyleSheet.create({
     },
     orderNumber: {
         fontSize: Fonts.sizes.sm,
-        fontWeight: '700',
+        fontFamily: Fonts.bold,
         color: Colors.secondary,
+        letterSpacing: 0.5,
     },
     orderItem: {
         fontSize: Fonts.sizes.md,
-        fontWeight: '600',
+        fontFamily: Fonts.semiBold,
         color: Colors.text,
-        marginBottom: 4,
+        marginBottom: 6,
     },
     orderMeta: {
         fontSize: Fonts.sizes.xs,
         color: Colors.textLight,
+        fontFamily: Fonts.regular,
     },
 });

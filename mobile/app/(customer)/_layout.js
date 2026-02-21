@@ -3,8 +3,11 @@ import { Tabs } from 'expo-router';
 import { Home, Ship, Package, Bell, User } from 'lucide-react-native';
 import { Colors, Fonts } from '../../constants/Colors';
 import { View, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CustomerLayout() {
+    const insets = useSafeAreaInsets();
+
     return (
         <Tabs
             screenOptions={{
@@ -14,13 +17,14 @@ export default function CustomerLayout() {
                 tabBarLabelStyle: {
                     fontSize: 11,
                     fontWeight: '600',
-                    marginBottom: Platform.OS === 'ios' ? 0 : 8,
+                    marginBottom: Platform.OS === 'ios' ? (insets.bottom > 0 ? 0 : 4) : 8,
                 },
                 tabBarStyle: {
                     backgroundColor: Colors.white,
                     borderTopWidth: 0,
-                    height: Platform.OS === 'ios' ? 88 : 65,
+                    height: Platform.OS === 'ios' ? (insets.bottom > 0 ? 84 : 65) : 65,
                     paddingTop: 8,
+                    paddingBottom: Platform.OS === 'ios' ? (insets.bottom > 0 ? 24 : 8) : 8,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: -4 },
                     shadowOpacity: 0.06,

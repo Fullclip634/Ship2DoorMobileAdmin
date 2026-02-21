@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import { ArrowLeft, Ship, User, Mail, Phone, Lock, Eye, EyeOff, MapPin, Building2, Map } from 'lucide-react-native';
+import AnimatedPressable from '../components/AnimatedPressable';
 
 export default function RegisterScreen() {
     const [form, setForm] = useState({
@@ -235,18 +236,18 @@ export default function RegisterScreen() {
                             </View>
                         </View>
 
-                        <TouchableOpacity
+                        <AnimatedPressable
                             style={[styles.registerButton, loading && styles.registerButtonDisabled]}
                             onPress={handleRegister}
                             disabled={loading}
-                            activeOpacity={0.8}
+                            scaleTo={0.96}
                         >
                             {loading ? (
                                 <ActivityIndicator color={Colors.white} />
                             ) : (
                                 <Text style={styles.registerButtonText}>Create Account</Text>
                             )}
-                        </TouchableOpacity>
+                        </AnimatedPressable>
                     </View>
 
                     {/* Footer */}
@@ -283,49 +284,51 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute', top: 50, left: Spacing.lg,
         width: 44, height: 44, borderRadius: 22,
-        backgroundColor: 'rgba(255,255,255,0.15)',
+        backgroundColor: 'rgba(255,255,255,0.1)',
         alignItems: 'center', justifyContent: 'center',
     },
     logoMark: {
         width: 60, height: 60, borderRadius: 30,
-        backgroundColor: 'rgba(255,255,255,0.15)',
+        backgroundColor: 'rgba(255,255,255,0.1)',
         alignItems: 'center', justifyContent: 'center',
         marginBottom: Spacing.sm,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
     },
     brandName: {
-        fontSize: 24, fontWeight: '800', color: Colors.white, letterSpacing: -0.5,
+        fontSize: 24, fontFamily: Fonts.extraBold, color: Colors.white, letterSpacing: -0.5,
     },
     heroCurve: {
-        height: 24,
+        height: 32,
         backgroundColor: Colors.background,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        borderTopLeftRadius: 32,
+        borderTopRightRadius: 32,
         marginTop: -1,
     },
 
     header: { paddingHorizontal: Spacing.xxl, marginBottom: 24 },
-    title: { fontSize: Fonts.sizes.xxl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
-    subtitle: { fontSize: Fonts.sizes.md, color: Colors.textSecondary, marginTop: Spacing.xs },
+    title: { fontSize: Fonts.sizes.xxl, fontFamily: Fonts.extraBold, color: Colors.text, letterSpacing: -0.5 },
+    subtitle: { fontSize: Fonts.sizes.md, color: Colors.textSecondary, fontFamily: Fonts.regular, marginTop: Spacing.xs },
     form: { gap: Spacing.md, paddingHorizontal: Spacing.xxl },
     row: { flexDirection: 'row', gap: Spacing.md },
     inputGroup: { gap: Spacing.xs },
-    label: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.text, marginLeft: 4 },
+    label: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.semiBold, color: Colors.text, marginLeft: 4 },
     inputContainer: {
         flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white,
-        borderRadius: BorderRadius.md, borderWidth: 1.5, borderColor: Colors.border,
-        paddingHorizontal: Spacing.lg, height: 50,
+        borderRadius: BorderRadius.md, borderWidth: 1, borderColor: Colors.border,
+        paddingHorizontal: Spacing.lg, height: 56,
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 4, elevation: 1,
     },
     inputIcon: { marginRight: Spacing.sm },
-    input: { flex: 1, fontSize: Fonts.sizes.md, color: Colors.text, height: '100%' },
-    eyeBtn: { padding: Spacing.xs },
+    input: { flex: 1, fontSize: Fonts.sizes.md, fontFamily: Fonts.regular, color: Colors.text, height: '100%' },
+    eyeBtn: { padding: Spacing.sm, marginRight: -Spacing.sm },
     registerButton: {
-        backgroundColor: Colors.primary, height: 52, borderRadius: BorderRadius.md,
-        alignItems: 'center', justifyContent: 'center', marginTop: Spacing.sm,
-        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+        backgroundColor: Colors.primary, height: 56, borderRadius: BorderRadius.md,
+        alignItems: 'center', justifyContent: 'center', marginTop: Spacing.md,
+        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
     },
-    registerButtonDisabled: { opacity: 0.7 },
-    registerButtonText: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.white },
+    registerButtonDisabled: { opacity: 0.7, shadowOpacity: 0.1 },
+    registerButtonText: { fontSize: Fonts.sizes.lg, fontFamily: Fonts.bold, color: Colors.white, letterSpacing: 0.5 },
     footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 28, paddingHorizontal: Spacing.xxl },
-    footerText: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary },
-    footerLink: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.primary },
+    footerText: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.regular, color: Colors.textSecondary },
+    footerLink: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.bold, color: Colors.primary },
 });

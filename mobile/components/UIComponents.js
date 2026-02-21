@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, Image, ActivityIndicator, Pressable } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import Icon from './LucideIcon';
+import AnimatedPressable from './AnimatedPressable';
 
 export const StatusBadge = ({ status, size = 'md' }) => {
     const statusConfig = {
@@ -68,43 +70,54 @@ export const LoadingScreen = () => (
     </View>
 );
 
+export const GlassCard = ({ children, style, intensity = 60, tint = "light" }) => (
+    <View style={[styles.glassCardContainer, style]}>
+        <BlurView intensity={intensity} tint={tint} style={StyleSheet.absoluteFill} />
+        {children}
+    </View>
+);
+
 export const StatCard = ({ icon, label, value, color }) => (
-    <View style={styles.statCard}>
+    <AnimatedPressable scaleTo={0.98} style={styles.statCard}>
         <View style={[styles.statIconWrap, { backgroundColor: (color || Colors.primary) + '15' }]}>
             <Icon name={icon} size={22} color={color || Colors.primary} />
         </View>
         <Text style={styles.statValue}>{value}</Text>
         <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    </AnimatedPressable>
 );
 
 export const SectionHeader = ({ title, actionText, onAction }) => (
     <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
         {actionText && (
-            <Text style={styles.sectionAction} onPress={onAction}>{actionText}</Text>
+            <Pressable onPress={onAction} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}>
+                <Text style={styles.sectionAction}>{actionText}</Text>
+            </Pressable>
         )}
     </View>
 );
 
-export const MenuItem = ({ icon, iconBg, label, subtitle, onPress, trailing, danger }) => (
-    <Pressable
-        style={({ pressed }) => [
-            styles.menuItem,
-            pressed && { backgroundColor: Colors.borderLight }
-        ]}
-        onPress={onPress}
-    >
-        <View style={[styles.menuIcon, { backgroundColor: iconBg || Colors.secondaryFaded }]}>
-            <Icon name={icon} size={19} color={danger ? Colors.error : Colors.white} />
-        </View>
-        <View style={styles.menuContent}>
-            <Text style={[styles.menuLabel, danger && { color: Colors.error }]}>{label}</Text>
-            {subtitle ? <Text style={styles.menuSub}>{subtitle}</Text> : null}
-        </View>
-        {trailing !== undefined ? trailing : <Icon name="chevron-right" size={18} color={Colors.textLight} />}
-    </Pressable>
-);
+export const MenuItem = ({ icon, iconBg, iconColor, label, subtitle, onPress, trailing, danger }) => {
+    const defaultIconColor = iconBg ? Colors.white : Colors.secondary;
+    return (
+        <AnimatedPressable
+            scaleTo={0.98}
+            onPress={onPress}
+        >
+            <View style={styles.menuItem}>
+                <View style={[styles.menuIcon, { backgroundColor: iconBg || Colors.secondaryFaded }]}>
+                    <Icon name={icon} size={19} color={danger ? Colors.error : (iconColor || defaultIconColor)} />
+                </View>
+                <View style={styles.menuContent}>
+                    <Text style={[styles.menuLabel, danger && { color: Colors.error }]}>{label}</Text>
+                    {subtitle ? <Text style={styles.menuSub}>{subtitle}</Text> : null}
+                </View>
+                {trailing !== undefined ? trailing : <Icon name="chevron-right" size={18} color={Colors.textLight} />}
+            </View>
+        </AnimatedPressable>
+    );
+};
 
 export const MenuDivider = () => <View style={styles.menuDivider} />;
 
@@ -112,35 +125,35 @@ const styles = StyleSheet.create({
     badge: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         borderRadius: BorderRadius.full,
-        gap: 4,
+        gap: 6,
         alignSelf: 'flex-start',
     },
     badgeSmall: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
     },
     badgeText: {
         fontSize: Fonts.sizes.xs,
-        fontWeight: '600',
+        fontFamily: Fonts.semiBold,
     },
     badgeTextSmall: {
-        fontSize: 10,
+        fontSize: 11,
     },
     directionBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         borderRadius: BorderRadius.full,
-        gap: 4,
+        gap: 6,
         alignSelf: 'flex-start',
     },
     directionText: {
         fontSize: Fonts.sizes.xs,
-        fontWeight: '700',
+        fontFamily: Fonts.bold,
     },
     emptyContainer: {
         alignItems: 'center',
@@ -159,7 +172,7 @@ const styles = StyleSheet.create({
     },
     emptyTitle: {
         fontSize: Fonts.sizes.lg,
-        fontWeight: '600',
+        fontFamily: Fonts.bold,
         color: Colors.text,
         marginBottom: Spacing.xs,
         textAlign: 'center',
@@ -167,6 +180,7 @@ const styles = StyleSheet.create({
     emptyMessage: {
         fontSize: Fonts.sizes.sm,
         color: Colors.textSecondary,
+        fontFamily: Fonts.regular,
         textAlign: 'center',
         lineHeight: 20,
     },
@@ -176,36 +190,42 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: Colors.background,
     },
+    glassCardContainer: {
+        overflow: 'hidden',
+        borderRadius: BorderRadius.lg,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.2)', // subtle glass border
+    },
     statCard: {
         flex: 1,
         backgroundColor: Colors.white,
         borderRadius: BorderRadius.lg,
-        padding: Spacing.lg,
+        padding: Spacing.xl,
         alignItems: 'center',
         shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.06,
+        shadowRadius: 16,
+        elevation: 4,
     },
     statIconWrap: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: 48,
+        height: 48,
+        borderRadius: 16, // squircle shape
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: Spacing.sm,
+        marginBottom: Spacing.md,
     },
     statValue: {
         fontSize: Fonts.sizes.xxl,
-        fontWeight: '700',
+        fontFamily: Fonts.extraBold,
         color: Colors.text,
     },
     statLabel: {
-        fontSize: Fonts.sizes.xs,
+        fontSize: Fonts.sizes.sm,
         color: Colors.textSecondary,
-        fontWeight: '500',
-        marginTop: 2,
+        fontFamily: Fonts.medium,
+        marginTop: 4,
         textAlign: 'center',
     },
     sectionHeader: {
@@ -214,30 +234,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: Spacing.xl,
         marginBottom: Spacing.md,
-        marginTop: Spacing.xl,
+        marginTop: Spacing.xxl,
     },
     sectionTitle: {
         fontSize: Fonts.sizes.lg,
-        fontWeight: '700',
+        fontFamily: Fonts.bold,
         color: Colors.text,
+        letterSpacing: -0.3,
     },
     sectionAction: {
         fontSize: Fonts.sizes.sm,
-        fontWeight: '600',
+        fontFamily: Fonts.semiBold,
         color: Colors.primary,
     },
     // Menu Items
     menuItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 14,
-        paddingHorizontal: Spacing.lg,
+        paddingVertical: 16,
+        paddingHorizontal: Spacing.xl,
         gap: Spacing.md,
+        backgroundColor: Colors.white,
     },
     menuIcon: {
-        width: 36,
-        height: 36,
-        borderRadius: 10,
+        width: 40,
+        height: 40,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -246,17 +268,18 @@ const styles = StyleSheet.create({
     },
     menuLabel: {
         fontSize: Fonts.sizes.md,
-        fontWeight: '600',
+        fontFamily: Fonts.semiBold,
         color: Colors.text,
     },
     menuSub: {
         fontSize: Fonts.sizes.xs,
         color: Colors.textSecondary,
-        marginTop: 1,
+        fontFamily: Fonts.regular,
+        marginTop: 2,
     },
     menuDivider: {
         height: StyleSheet.hairlineWidth,
         backgroundColor: Colors.border,
-        marginLeft: 62,
+        marginLeft: 76,
     },
 });

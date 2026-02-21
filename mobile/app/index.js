@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing } from '../constants/Colors';
@@ -7,31 +7,53 @@ import { Colors, Fonts, Spacing } from '../constants/Colors';
 export default function IndexScreen() {
     const { user, loading, isAuthenticated } = useAuth();
     const router = useRouter();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
     useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                friction: 8,
+                tension: 40,
+                useNativeDriver: true,
+            }),
+        ]).start();
+
         if (!loading) {
-            if (isAuthenticated && user) {
-                if (user.role === 'admin') {
-                    router.replace('/(admin)/dashboard');
+            // Slight delay so the user can see the premium entrance
+            const timer = setTimeout(() => {
+                if (isAuthenticated && user) {
+                    if (user.role === 'admin') {
+                        router.replace('/(admin)/dashboard');
+                    } else {
+                        router.replace('/(customer)/home');
+                    }
                 } else {
-                    router.replace('/(customer)/home');
+                    router.replace('/login');
                 }
-            } else {
-                router.replace('/login');
-            }
+            }, 800);
+            return () => clearTimeout(timer);
         }
     }, [loading, isAuthenticated, user]);
 
     return (
         <View style={styles.container}>
-            <View style={styles.logoContainer}>
+            <Animated.View style={[styles.logoContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
                 <View style={styles.iconCircle}>
                     <Text style={styles.logoIcon}>📦</Text>
                 </View>
                 <Text style={styles.logoText}>Ship<Text style={styles.logoAccent}>2</Text>Door</Text>
                 <Text style={styles.tagline}>Manila — Bohol Cargo Delivery</Text>
-            </View>
-            <ActivityIndicator size="large" color={Colors.white} style={styles.loader} />
+            </Animated.View>
+            <Animated.View style={[styles.loader, { opacity: fadeAnim }]}>
+                <ActivityIndicator size="large" color={Colors.white} />
+            </Animated.View>
         </View>
     );
 }
@@ -39,7 +61,7 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.secondary, // Deep luxurious navy background
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -47,34 +69,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     iconCircle: {
-        width: 90,
-        height: 90,
-        borderRadius: 45,
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(255,255,255,0.1)',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: Spacing.xl,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.15)', // Glass border effect
     },
     logoIcon: {
-        fontSize: 44,
+        fontSize: 48,
     },
     logoText: {
-        fontSize: 38,
-        fontWeight: '800',
+        fontSize: Fonts.sizes.display,
+        fontFamily: Fonts.extraBold,
         color: Colors.white,
-        letterSpacing: -1,
+        letterSpacing: -1.5,
     },
     logoAccent: {
-        color: Colors.secondary,
+        color: Colors.primary,
     },
     tagline: {
-        fontSize: Fonts.sizes.sm,
-        color: 'rgba(255,255,255,0.8)',
-        fontWeight: '500',
-        marginTop: Spacing.xs,
-        letterSpacing: 0.5,
+        fontSize: Fonts.sizes.md,
+        color: 'rgba(255,255,255,0.7)',
+        fontFamily: Fonts.medium,
+        marginTop: Spacing.sm,
+        letterSpacing: 1,
+        textTransform: 'uppercase',
     },
     loader: {
-        marginTop: 40,
+        position: 'absolute',
+        bottom: 80,
     },
 });

@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import { Ship, Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import AnimatedPressable from '../components/AnimatedPressable';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -113,18 +114,18 @@ export default function LoginScreen() {
                                 <Text style={styles.forgotText}>Forgot Password?</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
+                            <AnimatedPressable
                                 style={[styles.loginButton, loading && styles.loginButtonDisabled]}
                                 onPress={handleLogin}
                                 disabled={loading}
-                                activeOpacity={0.8}
+                                scaleTo={0.96}
                             >
                                 {loading ? (
                                     <ActivityIndicator color={Colors.white} />
                                 ) : (
                                     <Text style={styles.loginButtonText}>Sign In</Text>
                                 )}
-                            </TouchableOpacity>
+                            </AnimatedPressable>
                         </View>
 
                         {/* Footer */}
@@ -157,30 +158,32 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: 'rgba(255,255,255,0.15)',
+        backgroundColor: 'rgba(255,255,255,0.1)',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: Spacing.md,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.15)',
     },
     brandName: {
         fontSize: 32,
-        fontWeight: '800',
+        fontFamily: Fonts.extraBold,
         color: Colors.white,
-        letterSpacing: -0.5,
+        letterSpacing: -1,
         marginBottom: Spacing.xs,
     },
     tagline: {
         fontSize: Fonts.sizes.sm,
-        fontWeight: '500',
-        color: 'rgba(255,255,255,0.8)',
+        fontFamily: Fonts.medium,
+        color: 'rgba(255,255,255,0.7)',
         letterSpacing: 1.5,
         textTransform: 'uppercase',
     },
     heroCurve: {
-        height: 28,
+        height: 32,
         backgroundColor: Colors.background,
-        borderTopLeftRadius: 28,
-        borderTopRightRadius: 28,
+        borderTopLeftRadius: 32,
+        borderTopRightRadius: 32,
         marginTop: -1,
     },
 
@@ -191,13 +194,14 @@ const styles = StyleSheet.create({
     },
     welcomeTitle: {
         fontSize: Fonts.sizes.xxxl,
-        fontWeight: '800',
+        fontFamily: Fonts.extraBold,
         color: Colors.text,
         letterSpacing: -0.5,
     },
     welcomeSub: {
         fontSize: Fonts.sizes.md,
         color: Colors.textSecondary,
+        fontFamily: Fonts.regular,
         marginTop: Spacing.xs,
         marginBottom: Spacing.xxl,
     },
@@ -205,27 +209,28 @@ const styles = StyleSheet.create({
     // Form
     form: { gap: Spacing.xl },
     inputGroup: { gap: Spacing.sm },
-    label: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.text, marginLeft: 4 },
+    label: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.semiBold, color: Colors.text, marginLeft: 4 },
     inputContainer: {
         flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white,
-        borderRadius: BorderRadius.md, borderWidth: 1.5, borderColor: Colors.border,
-        paddingHorizontal: Spacing.lg, height: 52,
+        borderRadius: BorderRadius.md, borderWidth: 1, borderColor: Colors.border,
+        paddingHorizontal: Spacing.lg, height: 56, // Taller inputs for a premium feel
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 4, elevation: 1,
     },
     inputIcon: { marginRight: Spacing.md },
-    input: { flex: 1, fontSize: Fonts.sizes.md, color: Colors.text, height: '100%' },
-    eyeBtn: { padding: Spacing.xs },
+    input: { flex: 1, fontSize: Fonts.sizes.md, fontFamily: Fonts.regular, color: Colors.text, height: '100%' },
+    eyeBtn: { padding: Spacing.sm, marginRight: -Spacing.sm },
     forgotBtn: { alignSelf: 'flex-end', marginTop: -Spacing.sm },
-    forgotText: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.primary },
+    forgotText: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.bold, color: Colors.primary },
     loginButton: {
-        backgroundColor: Colors.primary, height: 52, borderRadius: BorderRadius.md,
+        backgroundColor: Colors.primary, height: 56, borderRadius: BorderRadius.md,
         alignItems: 'center', justifyContent: 'center',
-        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
     },
-    loginButtonDisabled: { opacity: 0.7 },
-    loginButtonText: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.white },
+    loginButtonDisabled: { opacity: 0.7, shadowOpacity: 0.1 },
+    loginButtonText: { fontSize: Fonts.sizes.lg, fontFamily: Fonts.bold, color: Colors.white, letterSpacing: 0.5 },
 
     // Footer
     footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32 },
-    footerText: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary },
-    footerLink: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.primary },
+    footerText: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.regular, color: Colors.textSecondary },
+    footerLink: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.bold, color: Colors.primary },
 });

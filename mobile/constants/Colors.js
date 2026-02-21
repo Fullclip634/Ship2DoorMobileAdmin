@@ -1,53 +1,56 @@
 export const Colors = {
-    primary: '#F58220',
-    primaryDark: '#D96E10',
-    primaryLight: '#FFB366',
-    primaryFaded: '#FFF3E6',
+    // Richer, more vibrant orange
+    primary: '#FF6B00',
+    primaryDark: '#CC5500',
+    primaryLight: '#FF954D',
+    primaryFaded: '#FFF0E5',
 
-    secondary: '#1B3A5C',
-    secondaryDark: '#0F2440',
-    secondaryLight: '#2D5A8C',
-    secondaryFaded: '#E8EDF3',
+    // Deeper, more luxurious navy/indigo
+    secondary: '#0A192F',
+    secondaryDark: '#040C18',
+    secondaryLight: '#172A45',
+    secondaryFaded: '#E6EBF0',
 
     white: '#FFFFFF',
-    background: '#F8F9FB',
+    background: '#F4F6F9', // Slightly cooler light gray for premium feel
     surface: '#FFFFFF',
     card: '#FFFFFF',
 
-    text: '#1A1A2E',
-    textSecondary: '#6B7280',
-    textLight: '#9CA3AF',
+    text: '#0F172A', // Slate 900 for better contrast and modern look
+    textSecondary: '#64748B', // Slate 500
+    textLight: '#94A3B8', // Slate 400
     textOnPrimary: '#FFFFFF',
     textOnSecondary: '#FFFFFF',
 
-    border: '#E5E7EB',
-    borderLight: '#F3F4F6',
-    divider: '#F0F0F0',
+    border: '#E2E8F0',
+    borderLight: '#F1F5F9',
+    divider: '#F1F5F9',
 
+    // Vibrant status colors
     success: '#10B981',
-    successLight: '#ECFDF5',
+    successLight: '#D1FAE5',
     warning: '#F59E0B',
-    warningLight: '#FFFBEB',
+    warningLight: '#FEF3C7',
     error: '#EF4444',
-    errorLight: '#FEF2F2',
+    errorLight: '#FEE2E2',
     info: '#3B82F6',
-    infoLight: '#EFF6FF',
+    infoLight: '#DBEAFE',
 
     purple: '#8B5CF6',
-    purpleLight: '#F5F3FF',
+    purpleLight: '#EDE9FE',
     pink: '#EC4899',
-    pinkLight: '#FDF2F8',
+    pinkLight: '#FCE7F3',
     cyan: '#06B6D4',
-    cyanLight: '#ECFEFF',
+    cyanLight: '#CFFAFE',
     amber: '#F59E0B',
-    amberLight: '#FFFBEB',
+    amberLight: '#FEF3C7',
     indigo: '#6366F1',
-    indigoLight: '#EEF2FF',
+    indigoLight: '#E0E7FF',
     sky: '#0EA5E9',
-    skyLight: '#F0F9FF',
+    skyLight: '#E0F2FE',
 
-    shadow: '#000000',
-    overlay: 'rgba(0, 0, 0, 0.5)',
+    shadow: '#0F172A', // Darker shadow for deeper elevation
+    overlay: 'rgba(15, 23, 42, 0.6)',
 
     statusPending: '#F59E0B',
     statusConfirmed: '#3B82F6',
@@ -65,10 +68,10 @@ export const Fonts = {
     extraBold: 'Inter_800ExtraBold',
 
     sizes: {
-        xs: 11,
-        sm: 13,
-        md: 15,
-        lg: 17,
+        xs: 12,
+        sm: 14,
+        md: 16,
+        lg: 18,
         xl: 20,
         xxl: 24,
         xxxl: 32,
@@ -89,9 +92,9 @@ export const Spacing = {
 
 export const BorderRadius = {
     sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
-    xxl: 24,
+    md: 14, // Slightly rounder for modern look
+    lg: 20, // Even rounder cards
+    xl: 24,
+    xxl: 32,
     full: 999,
 };
