@@ -2,8 +2,9 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Home, Ship, Package, Bell, User } from 'lucide-react-native';
 import { Colors, Fonts } from '../../constants/Colors';
-import { View, Platform } from 'react-native';
+import { View, Platform, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
 
 export default function CustomerLayout() {
     const insets = useSafeAreaInsets();
@@ -14,22 +15,26 @@ export default function CustomerLayout() {
                 headerShown: false,
                 tabBarActiveTintColor: Colors.primary,
                 tabBarInactiveTintColor: Colors.textLight,
+                tabBarBackground: () => (
+                    <BlurView
+                        tint="light"
+                        intensity={85}
+                        style={StyleSheet.absoluteFill}
+                    />
+                ),
                 tabBarLabelStyle: {
                     fontSize: 11,
                     fontWeight: '600',
                     marginBottom: Platform.OS === 'ios' ? (insets.bottom > 0 ? 0 : 4) : 8,
                 },
                 tabBarStyle: {
-                    backgroundColor: Colors.white,
+                    position: 'absolute', // Allows content to bleed underneath
+                    backgroundColor: 'rgba(255, 255, 255, 0.65)', // High opacity white tint for readability
                     borderTopWidth: 0,
+                    elevation: 0, // Flat shadow for cleaner glass effect
                     height: Platform.OS === 'ios' ? (insets.bottom > 0 ? 84 : 65) : 65,
                     paddingTop: 8,
                     paddingBottom: Platform.OS === 'ios' ? (insets.bottom > 0 ? 24 : 8) : 8,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: -4 },
-                    shadowOpacity: 0.06,
-                    shadowRadius: 12,
-                    elevation: 12,
                 },
             }}
         >

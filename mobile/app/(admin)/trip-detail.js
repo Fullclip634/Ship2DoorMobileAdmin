@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, TouchableOpacity,
-    Alert, TextInput,
+    Alert, TextInput, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -19,6 +19,7 @@ export default function AdminTripDetail() {
     const [loading, setLoading] = useState(true);
     const [showDelay, setShowDelay] = useState(false);
     const [delayReason, setDelayReason] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => { loadData(); }, [id]);
 
@@ -32,6 +33,12 @@ export default function AdminTripDetail() {
             setOrders(ordersRes.data || []);
         } catch (e) { console.error(e); }
         finally { setLoading(false); }
+    };
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await loadData();
+        setRefreshing(false);
     };
 
     const updateStatus = async (status) => {
@@ -56,6 +63,7 @@ export default function AdminTripDetail() {
             Alert.alert('✅ Sent', 'Delay notification sent to all customers.');
             setShowDelay(false);
             setDelayReason('');
+            loadData(); // Manually push the new UI state immediately
         } catch (e) { Alert.alert('Error', e.message); }
     };
 
@@ -77,7 +85,11 @@ export default function AdminTripDetail() {
                 <View style={{ width: 44 }} />
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.content}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
+            >
                 {/* Trip Info */}
                 <View style={styles.card}>
                     <View style={styles.cardTop}>
@@ -131,6 +143,17 @@ export default function AdminTripDetail() {
                                 </TouchableOpacity>
                             </View>
                         )}
+                    </View>
+                )}
+
+                {/* Delay Notice Display */}
+                {trip.delay_reason && (
+                    <View style={styles.delayCard}>
+                        <View style={styles.delayHeader}>
+                            <AlertTriangle size={20} color={Colors.warning} />
+                            <Text style={styles.delayTitle}>Active Delay Notice</Text>
+                        </View>
+                        <Text style={styles.delayText}>{trip.delay_reason}</Text>
                     </View>
                 )}
 
@@ -208,6 +231,13 @@ const styles = StyleSheet.create({
         alignItems: 'center', marginTop: Spacing.md,
     },
     delaySendText: { fontSize: Fonts.sizes.sm, fontWeight: '700', color: Colors.white },
+    delayCard: {
+        backgroundColor: Colors.warning + '15', borderRadius: BorderRadius.lg, padding: Spacing.xl, marginBottom: Spacing.lg,
+        borderWidth: 1, borderColor: Colors.warning + '50', marginHorizontal: Spacing.xl,
+    },
+    delayHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm },
+    delayTitle: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.warningDark || '#B7791F' },
+    delayText: { fontSize: Fonts.sizes.md, color: Colors.text, lineHeight: 22 },
     noOrders: { fontSize: Fonts.sizes.sm, color: Colors.textLight, fontStyle: 'italic' },
     orderItem: {
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',

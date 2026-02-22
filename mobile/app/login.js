@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import { Ship, Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
@@ -17,6 +17,14 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const router = useRouter();
+
+    useFocusEffect(
+        useCallback(() => {
+            setEmail('');
+            setPassword('');
+            setShowPassword(false);
+        }, [])
+    );
 
     const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {
@@ -119,6 +127,7 @@ export default function LoginScreen() {
                                 onPress={handleLogin}
                                 disabled={loading}
                                 scaleTo={0.96}
+                                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                             >
                                 {loading ? (
                                     <ActivityIndicator color={Colors.white} />
@@ -222,8 +231,8 @@ const styles = StyleSheet.create({
     forgotBtn: { alignSelf: 'flex-end', marginTop: -Spacing.sm },
     forgotText: { fontSize: Fonts.sizes.sm, fontFamily: Fonts.bold, color: Colors.primary },
     loginButton: {
-        backgroundColor: Colors.primary, height: 56, borderRadius: BorderRadius.md,
-        alignItems: 'center', justifyContent: 'center',
+        backgroundColor: Colors.primary, height: 60, borderRadius: BorderRadius.md,
+        alignItems: 'center', justifyContent: 'center', marginTop: Spacing.md,
         shadowColor: Colors.primary, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
     },
     loginButtonDisabled: { opacity: 0.7, shadowOpacity: 0.1 },

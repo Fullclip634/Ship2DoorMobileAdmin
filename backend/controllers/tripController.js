@@ -135,7 +135,7 @@ exports.updateTripStatus = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Status is required' });
         }
 
-        await pool.query('UPDATE trips SET status = ? WHERE id = ?', [status, req.params.id]);
+        await pool.query('UPDATE trips SET status = ?, delay_reason = ? WHERE id = ?', [status, delay_reason || null, req.params.id]);
 
         // Get trip info
         const [trips] = await pool.query('SELECT * FROM trips WHERE id = ?', [req.params.id]);

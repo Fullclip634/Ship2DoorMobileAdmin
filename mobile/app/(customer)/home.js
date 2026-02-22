@@ -11,6 +11,7 @@ import { Bell, Ship, Package, Megaphone, Calendar, Flag } from 'lucide-react-nat
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, EmptyState, SectionHeader } from '../../components/UIComponents';
+import { TripSkeleton, OrderSkeleton } from '../../components/SkeletonLoader';
 import AnimatedPressable from '../../components/AnimatedPressable';
 
 export default function CustomerHome() {
@@ -21,6 +22,7 @@ export default function CustomerHome() {
     const [activeOrders, setActiveOrders] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     const loadData = async () => {
         try {
@@ -36,6 +38,8 @@ export default function CustomerHome() {
             setUnreadCount(notifsRes.data?.unread_count || 0);
         } catch (error) {
             console.error('Load data error:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -110,7 +114,7 @@ export default function CustomerHome() {
                         {announcements.map((a) => (
                             <View key={a.id} style={styles.announcementCard}>
                                 <View style={styles.announcementIcon}>
-                                    <Megaphone size={18} color={Colors.primary} />
+                                    <Megaphone size={20} color={Colors.primary} />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={styles.announcementTitle}>{a.title}</Text>
@@ -128,7 +132,12 @@ export default function CustomerHome() {
                     actionText="See All"
                     onAction={() => router.push('/(customer)/trips')}
                 />
-                {upcomingTrips.length === 0 ? (
+                {loading ? (
+                    <View style={{ paddingHorizontal: Spacing.xl }}>
+                        <TripSkeleton />
+                        <TripSkeleton />
+                    </View>
+                ) : upcomingTrips.length === 0 ? (
                     <EmptyState icon="ship" title="No Upcoming Trips" message="Check back later for new trip schedules." />
                 ) : (
                     upcomingTrips.map((trip) => (
@@ -161,29 +170,36 @@ export default function CustomerHome() {
                 )}
 
                 {/* Active Orders */}
-                {activeOrders.length > 0 && (
+                {(loading || activeOrders.length > 0) && (
                     <>
                         <SectionHeader
                             title="Active Orders"
                             actionText="See All"
                             onAction={() => router.push('/(customer)/orders')}
                         />
-                        {activeOrders.map((order) => (
-                            <AnimatedPressable
-                                key={order.id}
-                                style={styles.orderCard}
-                                onPress={() => router.push({ pathname: '/(customer)/order-detail', params: { id: order.id } })}
-                            >
-                                <View style={styles.orderTop}>
-                                    <Text style={styles.orderNumber}>{order.order_number}</Text>
-                                    <StatusBadge status={order.status} size="sm" />
-                                </View>
-                                <Text style={styles.orderItem} numberOfLines={1}>{order.item_description}</Text>
-                                <Text style={styles.orderMeta}>
-                                    {order.receiver_name} • {formatDate(order.created_at)}
-                                </Text>
-                            </AnimatedPressable>
-                        ))}
+                        {loading ? (
+                            <View style={{ paddingHorizontal: Spacing.xl }}>
+                                <OrderSkeleton />
+                                <OrderSkeleton />
+                            </View>
+                        ) : (
+                            activeOrders.map((order) => (
+                                <AnimatedPressable
+                                    key={order.id}
+                                    style={styles.orderCard}
+                                    onPress={() => router.push({ pathname: '/(customer)/order-detail', params: { id: order.id } })}
+                                >
+                                    <View style={styles.orderTop}>
+                                        <Text style={styles.orderNumber}>{order.order_number}</Text>
+                                        <StatusBadge status={order.status} size="sm" />
+                                    </View>
+                                    <Text style={styles.orderItem} numberOfLines={1}>{order.item_description}</Text>
+                                    <Text style={styles.orderMeta}>
+                                        {order.receiver_name} • {formatDate(order.created_at)}
+                                    </Text>
+                                </AnimatedPressable>
+                            ))
+                        )}
                     </>
                 )}
 
@@ -283,39 +299,39 @@ const styles = StyleSheet.create({
     },
     announcementCard: {
         flexDirection: 'row',
-        backgroundColor: Colors.primaryFaded,
+        backgroundColor: Colors.white,
         marginHorizontal: Spacing.xl,
-        marginBottom: Spacing.sm,
-        borderRadius: BorderRadius.md,
-        padding: Spacing.lg,
-        gap: Spacing.md,
-        borderLeftWidth: 4,
-        borderLeftColor: Colors.primary,
+        marginBottom: Spacing.lg,
+        borderRadius: BorderRadius.xl,
+        padding: Spacing.xl,
+        gap: Spacing.lg,
+        shadowColor: Colors.shadow,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.04,
+        shadowRadius: 12,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.borderLight,
     },
     announcementIcon: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: Colors.white,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: Colors.primary + '15',
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
     },
     announcementTitle: {
-        fontSize: Fonts.sizes.sm,
+        fontSize: Fonts.sizes.md,
         fontFamily: Fonts.bold,
         color: Colors.text,
-        marginBottom: 2,
+        marginBottom: 4,
     },
     announcementMsg: {
         fontSize: Fonts.sizes.sm,
         color: Colors.textSecondary,
         fontFamily: Fonts.regular,
-        lineHeight: 18,
+        lineHeight: 20,
     },
     announcementDate: {
         fontSize: Fonts.sizes.xs,

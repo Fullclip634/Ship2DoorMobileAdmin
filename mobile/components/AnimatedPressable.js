@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 
-export default function AnimatedPressable({ children, onPress, style, disabled, scaleTo = 0.96 }) {
+export default function AnimatedPressable({ children, onPress, style, disabled, scaleTo = 0.96, hitSlop }) {
     const scale = useRef(new Animated.Value(1)).current;
 
     const handlePressIn = () => {
@@ -29,6 +29,7 @@ export default function AnimatedPressable({ children, onPress, style, disabled, 
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 disabled={disabled}
+                hitSlop={hitSlop}
                 style={({ pressed }) => [
                     { opacity: disabled ? 0.6 : 1 },
                     // Ensure children fill the pressable area easily if needed

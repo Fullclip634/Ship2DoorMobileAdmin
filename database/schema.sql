@@ -37,6 +37,7 @@ CREATE TABLE trips (
     departure_date DATE NOT NULL,
     estimated_arrival DATE,
     status ENUM('upcoming', 'pickup_phase', 'in_transit', 'boarding_ship', 'at_sea', 'arrived', 'delivering', 'completed', 'cancelled') NOT NULL DEFAULT 'upcoming',
+    delay_reason TEXT,
     notes TEXT,
     max_capacity INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

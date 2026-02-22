@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import { ArrowLeft, Mail, Grid3X3, LockOpen, Lock, Eye, EyeOff } from 'lucide-react-native';
 import api from '../services/api';
@@ -19,6 +19,17 @@ export default function ForgotPasswordScreen() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            setStep(1);
+            setEmail('');
+            setCode('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setShowPassword(false);
+        }, [])
+    );
 
     const handleSendCode = async () => {
         if (!email.trim()) {

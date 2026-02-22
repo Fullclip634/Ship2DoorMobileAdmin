@@ -161,18 +161,18 @@ const styles = StyleSheet.create({
     },
     list: { paddingHorizontal: Spacing.xl, paddingBottom: 20 },
     card: {
-        backgroundColor: Colors.white, borderRadius: BorderRadius.lg, padding: Spacing.lg, marginBottom: Spacing.md,
-        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
-        borderLeftWidth: 3, borderLeftColor: Colors.primary,
+        backgroundColor: Colors.white, borderRadius: BorderRadius.xl, padding: Spacing.xl, marginBottom: Spacing.lg,
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 2,
+        borderWidth: 1, borderColor: Colors.borderLight,
     },
     cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.sm },
     pinIcon: {
-        width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.primaryFaded,
+        width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary + '15',
         alignItems: 'center', justifyContent: 'center',
     },
     cardTitle: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.text, marginBottom: 4 },
     cardMsg: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary, lineHeight: 20 },
-    cardDate: { fontSize: Fonts.sizes.xs, color: Colors.textLight, marginTop: Spacing.sm },
+    cardDate: { fontSize: Fonts.sizes.xs, color: Colors.textLight, marginTop: Spacing.md },
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
     modal: {
         backgroundColor: Colors.white, borderTopLeftRadius: 24, borderTopRightRadius: 24,

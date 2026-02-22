@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../constants/Colors';
 import { ArrowLeft, Ship, User, Mail, Phone, Lock, Eye, EyeOff, MapPin, Building2, Map } from 'lucide-react-native';
@@ -19,6 +19,16 @@ export default function RegisterScreen() {
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
     const router = useRouter();
+
+    useFocusEffect(
+        useCallback(() => {
+            setForm({
+                first_name: '', last_name: '', email: '', phone: '',
+                password: '', confirm_password: '', address: '', city: '', province: '',
+            });
+            setShowPassword(false);
+        }, [])
+    );
 
     const updateField = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 

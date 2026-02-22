@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert,
+    View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { ArrowLeft, Calendar, Flag, PlusCircle } from 'lucide-react-native';
+import { ArrowLeft, Calendar, Flag, PlusCircle, AlertTriangle } from 'lucide-react-native';
 import Icon from '../../components/LucideIcon';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, LoadingScreen } from '../../components/UIComponents';
+import GlassCard from '../../components/GlassCard';
 
 export default function TripDetail() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
     const [trip, setTrip] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         loadTrip();
@@ -31,6 +33,12 @@ export default function TripDetail() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await loadTrip();
+        setRefreshing(false);
     };
 
     if (loading) return <LoadingScreen />;
@@ -63,7 +71,11 @@ export default function TripDetail() {
                 <View style={{ width: 44 }} />
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.content}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />}
+            >
                 {/* Trip Info Card */}
                 <View style={styles.card}>
                     <View style={styles.cardTop}>
@@ -98,6 +110,17 @@ export default function TripDetail() {
                     )}
                 </View>
 
+                {/* Delay Notice */}
+                {trip.delay_reason && (
+                    <View style={styles.delayCard}>
+                        <View style={styles.delayHeader}>
+                            <AlertTriangle size={20} color={Colors.warning} />
+                            <Text style={styles.delayTitle}>Delay Notice</Text>
+                        </View>
+                        <Text style={styles.delayText}>{trip.delay_reason}</Text>
+                    </View>
+                )}
+
                 {/* Status Tracker */}
                 {trip.status !== 'cancelled' && (
                     <View style={styles.card}>
@@ -126,17 +149,22 @@ export default function TripDetail() {
 
                 {/* Book Button */}
                 {isBookable && (
-                    <TouchableOpacity
-                        style={styles.bookButton}
-                        onPress={() => router.push({ pathname: '/(customer)/book-shipment', params: { tripId: trip.id, direction: trip.direction, departureDate: trip.departure_date } })}
-                        activeOpacity={0.8}
-                    >
-                        <PlusCircle size={22} color={Colors.white} />
-                        <Text style={styles.bookButtonText}>Book Shipment on This Trip</Text>
-                    </TouchableOpacity>
+                    <View style={styles.bottomNavContainer}>
+                        <GlassCard
+                            intensity={80}
+                            tint="light"
+                            style={styles.glassButtonContainer}
+                            onPress={() => router.push({ pathname: '/(customer)/book-shipment', params: { tripId: trip.id, direction: trip.direction, departureDate: trip.departure_date } })}
+                        >
+                            <View style={styles.bookButtonInner}>
+                                <PlusCircle size={22} color={Colors.primary} />
+                                <Text style={styles.bookButtonText}>Book Shipment on This Trip</Text>
+                            </View>
+                        </GlassCard>
+                    </View>
                 )}
 
-                <View style={{ height: 30 }} />
+                <View style={{ height: 140 }} />
             </ScrollView>
         </SafeAreaView>
     );
@@ -160,6 +188,13 @@ const styles = StyleSheet.create({
         shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
     },
     cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl },
+    delayCard: {
+        backgroundColor: Colors.warning + '15', borderRadius: BorderRadius.lg, padding: Spacing.xl, marginBottom: Spacing.lg,
+        borderWidth: 1, borderColor: Colors.warning + '50', marginHorizontal: Spacing.xl,
+    },
+    delayHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm },
+    delayTitle: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.warningDark || '#B7791F' },
+    delayText: { fontSize: Fonts.sizes.md, color: Colors.text, lineHeight: 22 },
     dateSection: { gap: Spacing.lg },
     dateItem: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
     dateLabel: { fontSize: Fonts.sizes.xs, color: Colors.textLight, fontWeight: '500' },
@@ -181,10 +216,21 @@ const styles = StyleSheet.create({
     stepLabel: { fontSize: Fonts.sizes.sm, color: Colors.textLight, fontWeight: '500', paddingTop: 6 },
     stepLabelActive: { color: Colors.text },
     stepLabelCurrent: { fontWeight: '700', color: Colors.secondary },
-    bookButton: {
-        flexDirection: 'row', backgroundColor: Colors.primary, height: 56, borderRadius: BorderRadius.lg,
-        alignItems: 'center', justifyContent: 'center', gap: Spacing.sm,
-        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+
+    // Floating Glass Button
+    bottomNavContainer: {
+        position: 'absolute',
+        bottom: 78, left: 0, right: 0, // Adjusted to sit perfectly above the nav bar edge
+        paddingHorizontal: Spacing.xl,
     },
-    bookButtonText: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.white },
+    glassButtonContainer: {
+        borderRadius: BorderRadius.full,
+        overflow: 'hidden',
+        borderWidth: 1, borderColor: Colors.primary + '30',
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    },
+    bookButtonInner: {
+        flexDirection: 'row', height: 56, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm,
+    },
+    bookButtonText: { fontSize: Fonts.sizes.lg, fontWeight: '700', color: Colors.primary },
 });

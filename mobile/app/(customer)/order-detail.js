@@ -11,6 +11,7 @@ import Icon from '../../components/LucideIcon';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatusBadge, DirectionBadge, LoadingScreen } from '../../components/UIComponents';
+import GlassCard from '../../components/GlassCard';
 
 export default function OrderDetail() {
     const { id } = useLocalSearchParams();
@@ -160,13 +161,22 @@ export default function OrderDetail() {
 
                 {/* Cancel Button */}
                 {order.status === 'pending' && (
-                    <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                        <XCircle size={20} color={Colors.error} />
-                        <Text style={styles.cancelText}>Cancel Order</Text>
-                    </TouchableOpacity>
+                    <View style={styles.bottomNavContainer}>
+                        <GlassCard
+                            intensity={80}
+                            tint="light"
+                            style={styles.glassButtonContainer}
+                            onPress={handleCancel}
+                        >
+                            <View style={styles.cancelButtonInner}>
+                                <XCircle size={20} color={Colors.error} />
+                                <Text style={styles.cancelText}>Cancel Order</Text>
+                            </View>
+                        </GlassCard>
+                    </View>
                 )}
 
-                <View style={{ height: 30 }} />
+                <View style={{ height: 140 }} />
             </ScrollView>
         </SafeAreaView>
     );
@@ -216,10 +226,21 @@ const styles = StyleSheet.create({
     stepLabelActive: { color: Colors.text },
     stepLabelCurrent: { fontWeight: '700', color: Colors.secondary },
     adminNotes: { fontSize: Fonts.sizes.md, color: Colors.text, lineHeight: 22, fontStyle: 'italic' },
-    cancelButton: {
-        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.sm,
-        backgroundColor: Colors.errorLight, borderRadius: BorderRadius.lg, padding: Spacing.lg,
+
+    // Floating Glass Button
+    bottomNavContainer: {
+        position: 'absolute',
+        bottom: 78, left: 0, right: 0, // Adjusted to sit perfectly above the nav bar edge
+        paddingHorizontal: Spacing.xl,
+    },
+    glassButtonContainer: {
+        borderRadius: BorderRadius.full,
+        overflow: 'hidden',
         borderWidth: 1, borderColor: Colors.error + '30',
+    },
+    cancelButtonInner: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.sm,
+        height: 56, backgroundColor: Colors.errorLight,
     },
     cancelText: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.error },
 });
