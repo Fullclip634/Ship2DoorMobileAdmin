@@ -143,6 +143,7 @@ export default function CustomerNotifications() {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
                 ListEmptyComponent={<EmptyState icon="bell-off" title="No Notifications" message="You'll see updates about your orders and trips here." />}
             />
+            <View style={{ height: 40 }} />
         </SafeAreaView>
     );
 }

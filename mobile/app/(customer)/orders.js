@@ -108,6 +108,7 @@ export default function CustomerOrders() {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
                 ListEmptyComponent={<EmptyState icon="package" title="No Orders Yet" message="Book your first shipment from the Trips tab!" />}
             />
+            <View style={{ height: 40 }} />
         </SafeAreaView>
     );
 }

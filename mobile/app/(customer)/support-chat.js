@@ -242,9 +242,9 @@ export default function SupportChatScreen() {
             {/* Input Bar */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 65 : 0}
             >
-                <View style={styles.inputBar}>
+                <View style={[styles.inputBar, { paddingBottom: Spacing.sm + 55 }]}>
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={styles.input}

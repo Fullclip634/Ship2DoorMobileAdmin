@@ -203,7 +203,7 @@ export default function CustomerHome() {
                     </>
                 )}
 
-                <View style={{ height: 30 }} />
+                <View style={{ height: 50 }} />
             </ScrollView>
         </SafeAreaView>
     );

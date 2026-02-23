@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity,
-    RefreshControl, Alert, ActivityIndicator, Modal,
+    RefreshControl, Alert, ActivityIndicator, Modal, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
@@ -97,50 +97,68 @@ export default function AdminAnnouncements() {
             />
 
             {/* Create Modal */}
-            <Modal visible={showCreate} animationType="slide" transparent>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modal}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>New Announcement</Text>
-                            <TouchableOpacity onPress={() => setShowCreate(false)}>
-                                <X size={24} color={Colors.text} />
-                            </TouchableOpacity>
-                        </View>
-
-                        <TextInput
-                            style={styles.modalInput}
-                            placeholder="Title"
-                            placeholderTextColor={Colors.textLight}
-                            value={form.title}
-                            onChangeText={(v) => setForm({ ...form, title: v })}
-                        />
-
-                        <TextInput
-                            style={[styles.modalInput, { minHeight: 120, textAlignVertical: 'top' }]}
-                            placeholder="Write your announcement message..."
-                            placeholderTextColor={Colors.textLight}
-                            value={form.message}
-                            onChangeText={(v) => setForm({ ...form, message: v })}
-                            multiline
-                            numberOfLines={5}
-                        />
-
+            <Modal
+                visible={showCreate}
+                animationType="fade"
+                transparent={true}
+                statusBarTranslucent={true}
+            >
+                <TouchableOpacity
+                    style={styles.modalOverlay}
+                    activeOpacity={1}
+                    onPress={() => setShowCreate(false)}
+                >
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                        style={{ flex: 1, justifyContent: 'flex-end', width: '100%' }}
+                    >
                         <TouchableOpacity
-                            style={[styles.postBtn, creating && { opacity: 0.7 }]}
-                            onPress={handleCreate}
-                            disabled={creating}
+                            activeOpacity={1}
+                            style={styles.modal}
+                            onPress={(e) => e.stopPropagation()}
                         >
-                            {creating ? (
-                                <ActivityIndicator color={Colors.white} />
-                            ) : (
-                                <>
-                                    <Send size={18} color={Colors.white} />
-                                    <Text style={styles.postText}>Post & Notify All Customers</Text>
-                                </>
-                            )}
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>New Announcement</Text>
+                                <TouchableOpacity onPress={() => setShowCreate(false)}>
+                                    <X size={24} color={Colors.text} />
+                                </TouchableOpacity>
+                            </View>
+
+                            <TextInput
+                                style={styles.modalInput}
+                                placeholder="Title"
+                                placeholderTextColor={Colors.textLight}
+                                value={form.title}
+                                onChangeText={(v) => setForm({ ...form, title: v })}
+                            />
+
+                            <TextInput
+                                style={[styles.modalInput, { minHeight: 120, textAlignVertical: 'top' }]}
+                                placeholder="Write your announcement message..."
+                                placeholderTextColor={Colors.textLight}
+                                value={form.message}
+                                onChangeText={(v) => setForm({ ...form, message: v })}
+                                multiline
+                                numberOfLines={5}
+                            />
+
+                            <TouchableOpacity
+                                style={[styles.postBtn, creating && { opacity: 0.7 }]}
+                                onPress={handleCreate}
+                                disabled={creating}
+                            >
+                                {creating ? (
+                                    <ActivityIndicator color={Colors.white} />
+                                ) : (
+                                    <>
+                                        <Send size={18} color={Colors.white} />
+                                        <Text style={styles.postText}>Post & Notify All Customers</Text>
+                                    </>
+                                )}
+                            </TouchableOpacity>
                         </TouchableOpacity>
-                    </View>
-                </View>
+                    </KeyboardAvoidingView>
+                </TouchableOpacity>
             </Modal>
         </SafeAreaView>
     );

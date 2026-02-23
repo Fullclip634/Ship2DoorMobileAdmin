@@ -107,6 +107,7 @@ export default function CustomerTrips() {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
                 ListEmptyComponent={<EmptyState icon="ship" title="No Trips Available" message="No upcoming trips at the moment. Check back soon!" />}
             />
+            <View style={{ height: 40 }} />
         </SafeAreaView>
     );
 }
