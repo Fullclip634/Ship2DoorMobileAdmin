@@ -13,12 +13,26 @@ exports.createOrder = async (req, res) => {
     try {
         const {
             trip_id, item_description, quantity, weight_estimate,
-            special_instructions, pickup_address, pickup_city,
-            delivery_address, delivery_city, receiver_name, receiver_phone,
+            special_instructions, pickup_city,
+            pickup_street, pickup_purok, pickup_barangay, pickup_province,
+            pickup_zip_code, pickup_landmark,
+            delivery_city,
+            delivery_street, delivery_purok, delivery_barangay, delivery_province,
+            delivery_zip_code, delivery_landmark,
+            receiver_name, receiver_phone, receiver_fb_name,
+            sender_name, sender_phone,
         } = req.body;
 
-        if (!trip_id || !item_description || !pickup_address || !delivery_address || !receiver_name || !receiver_phone) {
-            return res.status(400).json({ success: false, message: 'Required fields: trip_id, item_description, pickup_address, delivery_address, receiver_name, receiver_phone' });
+        if (!trip_id || !item_description || !receiver_name) {
+            return res.status(400).json({ success: false, message: 'Required fields: trip_id, item_description, receiver_name' });
+        }
+
+        if (!pickup_barangay || !pickup_province || !pickup_landmark) {
+            return res.status(400).json({ success: false, message: 'Pickup barangay, province, and landmark are required' });
+        }
+
+        if (!delivery_barangay || !delivery_province || !delivery_landmark) {
+            return res.status(400).json({ success: false, message: 'Delivery barangay, province, and landmark are required' });
         }
 
         // Verify trip exists and is bookable
@@ -27,12 +41,22 @@ exports.createOrder = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Trip not available for booking' });
         }
 
+        // Auto-compose full address strings for backward compatibility
+        const pickup_address = [pickup_street, pickup_purok, pickup_barangay, pickup_city, pickup_province, pickup_zip_code].filter(Boolean).join(', ');
+        const delivery_address = [delivery_street, delivery_purok, delivery_barangay, delivery_city, delivery_province, delivery_zip_code].filter(Boolean).join(', ');
+
         const orderNumber = generateOrderNumber();
 
         const [result] = await pool.query(
-            `INSERT INTO orders (order_number, trip_id, customer_id, item_description, quantity, weight_estimate, special_instructions, pickup_address, pickup_city, delivery_address, delivery_city, receiver_name, receiver_phone)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [orderNumber, trip_id, req.user.id, item_description, quantity || 1, weight_estimate || null, special_instructions || null, pickup_address, pickup_city || null, delivery_address, delivery_city || null, receiver_name, receiver_phone]
+            `INSERT INTO orders (order_number, trip_id, customer_id, item_description, quantity, weight_estimate, special_instructions,
+             pickup_address, pickup_city, pickup_street, pickup_purok, pickup_barangay, pickup_province, pickup_zip_code, pickup_landmark,
+             delivery_address, delivery_city, delivery_street, delivery_purok, delivery_barangay, delivery_province, delivery_zip_code, delivery_landmark,
+             receiver_name, receiver_phone, receiver_fb_name, sender_name, sender_phone)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [orderNumber, trip_id, req.user.id, item_description, quantity || 1, weight_estimate || null, special_instructions || null,
+                pickup_address, pickup_city || null, pickup_street || null, pickup_purok || null, pickup_barangay, pickup_province, pickup_zip_code || null, pickup_landmark,
+                delivery_address, delivery_city || null, delivery_street || null, delivery_purok || null, delivery_barangay, delivery_province, delivery_zip_code || null, delivery_landmark,
+                receiver_name, receiver_phone || null, receiver_fb_name || null, sender_name || null, sender_phone || null]
         );
 
         // Notify admin

@@ -120,11 +120,35 @@ export default function AdminOrderDetail() {
 
                 {/* Pickup & Delivery */}
                 <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Pickup & Delivery</Text>
-                    <InfoRow icon="map-pin" label="Pickup" value={`${order.pickup_address}${order.pickup_city ? `, ${order.pickup_city}` : ''}`} />
-                    <InfoRow icon="navigation" label="Deliver To" value={`${order.delivery_address}${order.delivery_city ? `, ${order.delivery_city}` : ''}`} />
+                    <Text style={styles.sectionTitle}>Pickup Details</Text>
+                    {(order.sender_name || order.sender_phone) && (
+                        <>
+                            {order.sender_name && <InfoRow icon="user" label="Sender" value={order.sender_name} />}
+                            {order.sender_phone && <InfoRow icon="phone" label="Sender Phone" value={order.sender_phone} />}
+                        </>
+                    )}
+                    {order.pickup_street && <InfoRow icon="home" label="Street / House No." value={order.pickup_street} />}
+                    {order.pickup_purok && <InfoRow icon="flag" label="Purok" value={order.pickup_purok} />}
+                    <InfoRow icon="map-pin" label="Barangay" value={order.pickup_barangay || '—'} />
+                    <InfoRow icon="map-pin" label="City" value={order.pickup_city || '—'} />
+                    <InfoRow icon="map" label="Province" value={order.pickup_province || '—'} />
+                    {order.pickup_zip_code && <InfoRow icon="map-pin" label="Zip Code" value={order.pickup_zip_code} />}
+                    <InfoRow icon="navigation" label="Landmark" value={order.pickup_landmark || '—'} />
+                </View>
+
+                <View style={styles.card}>
+                    <Text style={styles.sectionTitle}>Delivery Details</Text>
+                    {order.delivery_street && <InfoRow icon="home" label="Street / House No." value={order.delivery_street} />}
+                    {order.delivery_purok && <InfoRow icon="flag" label="Purok" value={order.delivery_purok} />}
+                    <InfoRow icon="map-pin" label="Barangay" value={order.delivery_barangay || '—'} />
+                    <InfoRow icon="map-pin" label="City" value={order.delivery_city || '—'} />
+                    <InfoRow icon="map" label="Province" value={order.delivery_province || '—'} />
+                    {order.delivery_zip_code && <InfoRow icon="navigation" label="Zip Code" value={order.delivery_zip_code} />}
+                    <InfoRow icon="navigation" label="Landmark" value={order.delivery_landmark || '—'} />
+                    <View style={styles.divider} />
                     <InfoRow icon="user" label="Receiver" value={order.receiver_name} />
                     <InfoRow icon="phone" label="Receiver Phone" value={order.receiver_phone} />
+                    {order.receiver_fb_name && <InfoRow icon="user" label="Facebook Name" value={order.receiver_fb_name} />}
                 </View>
 
                 {/* Admin Actions */}
@@ -212,6 +236,7 @@ const styles = StyleSheet.create({
     },
     infoLabel: { fontSize: Fonts.sizes.xs, color: Colors.textLight, fontWeight: '500' },
     infoValue: { fontSize: Fonts.sizes.sm, color: Colors.text, fontWeight: '500', marginTop: 1 },
+    divider: { height: 1, backgroundColor: Colors.borderLight, marginVertical: Spacing.sm },
     instructionBox: {
         flexDirection: 'row', gap: Spacing.sm, backgroundColor: Colors.warningLight,
         borderRadius: BorderRadius.sm, padding: Spacing.md, marginTop: Spacing.sm,

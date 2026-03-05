@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity,
     Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
@@ -6,37 +6,98 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { ArrowLeft, Ship, Package, Layers, Weight, MapPin, Building2, Navigation, User, Phone, CheckCircle } from 'lucide-react-native';
+import { ArrowLeft, Ship, Package, Layers, Weight, MapPin, Building2, Navigation, User, Phone, CheckCircle, Home, Flag, Map } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { useAuth } from '../../context/AuthContext';
+
+// ── Extracted outside render to avoid unmount/remount on each keystroke ──
+const Field = React.memo(({ icon: IconComp, label, value, onChangeText, placeholder, required, multiline, keyboardType, iconColor }) => (
+    <View style={styles.fieldGroup}>
+        <Text style={styles.label}>
+            {label} {required && <Text style={styles.required}>*</Text>}
+        </Text>
+        <View style={[styles.inputWrap, multiline && { alignItems: 'flex-start' }]}>
+            <IconComp size={18} color={iconColor || Colors.primary} style={[styles.inputIcon, multiline && { marginTop: 16 }]} />
+            <TextInput
+                style={[styles.input, multiline && styles.inputMultiline]}
+                placeholderTextColor={Colors.textLight}
+                value={value}
+                onChangeText={onChangeText}
+                placeholder={placeholder}
+                multiline={multiline}
+                numberOfLines={multiline ? 3 : 1}
+                keyboardType={keyboardType || 'default'}
+                textAlignVertical={multiline ? 'top' : 'center'}
+            />
+        </View>
+    </View>
+));
 
 export default function BookShipment() {
     const { tripId, direction, departureDate } = useLocalSearchParams();
     const { user } = useAuth();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+
+    // Determine which side is Manila and which is Bohol
+    const isManilaToBohol = direction === 'manila_to_bohol';
+    const pickupIsManila = isManilaToBohol;
+    const deliveryIsManila = !isManilaToBohol;
+
     const [form, setForm] = useState({
         item_description: '',
         quantity: '1',
         weight_estimate: '',
         special_instructions: '',
-        pickup_address: user?.address || '',
-        pickup_city: user?.city || '',
-        delivery_address: '',
+        // Pickup address
+        pickup_city: '',
+        pickup_street: '',
+        pickup_purok: '',
+        pickup_barangay: '',
+        pickup_province: pickupIsManila ? 'Metro Manila' : 'Bohol',
+        pickup_zip_code: '',
+        pickup_landmark: '',
+        // Delivery address
         delivery_city: '',
+        delivery_street: '',
+        delivery_purok: '',
+        delivery_barangay: '',
+        delivery_province: deliveryIsManila ? 'Metro Manila' : 'Bohol',
+        delivery_zip_code: '',
+        delivery_landmark: '',
+        // Receiver
         receiver_name: '',
         receiver_phone: '',
+        receiver_fb_name: '',
+        // Sender
+        sender_name: user ? `${user.first_name} ${user.last_name}` : '',
+        sender_phone: user?.phone || '',
     });
 
-    const updateField = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
-    const dirLabel = direction === 'manila_to_bohol' ? 'Manila to Bohol' : 'Bohol to Manila';
+    const updateField = useCallback((key, value) => setForm(prev => ({ ...prev, [key]: value })), []);
+    const dirLabel = isManilaToBohol ? 'Manila to Bohol' : 'Bohol to Manila';
     const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
     const handleSubmit = async () => {
-        const { item_description, pickup_address, delivery_address, receiver_name, receiver_phone } = form;
-        if (!item_description.trim() || !pickup_address.trim() || !delivery_address.trim() || !receiver_name.trim() || !receiver_phone.trim()) {
-            Alert.alert('Missing Fields', 'Please fill in all required fields.');
+        const { item_description, pickup_barangay, pickup_province, pickup_landmark,
+            delivery_barangay, delivery_province, delivery_landmark,
+            receiver_name } = form;
+
+        if (!item_description.trim()) {
+            Alert.alert('Missing Fields', 'Please fill in the item description.');
+            return;
+        }
+        if (!pickup_barangay.trim() || !pickup_province.trim() || !pickup_landmark.trim()) {
+            Alert.alert('Missing Fields', 'Please complete all required pickup address fields (barangay, province, landmark).');
+            return;
+        }
+        if (!delivery_barangay.trim() || !delivery_province.trim() || !delivery_landmark.trim()) {
+            Alert.alert('Missing Fields', 'Please complete all required delivery address fields (barangay, province, landmark).');
+            return;
+        }
+        if (!receiver_name.trim()) {
+            Alert.alert('Missing Fields', 'Please fill in the receiver name.');
             return;
         }
 
@@ -58,6 +119,88 @@ export default function BookShipment() {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Helper to render an address section inline (no sub-component re-creation)
+    const renderAddressSection = (side, isManila) => {
+        const prefix = side;
+        const sideLabel = side === 'pickup' ? 'Pickup' : 'Delivery';
+
+        return (
+            <>
+                <Text style={styles.sectionTitle}>{sideLabel} Address</Text>
+
+                {isManila ? (
+                    <Field
+                        icon={Home}
+                        label="Street / House No."
+                        value={form[`${prefix}_street`]}
+                        onChangeText={(v) => updateField(`${prefix}_street`, v)}
+                        placeholder="e.g., 123 Rizal St., Unit 4B"
+                        required
+                    />
+                ) : (
+                    <Field
+                        icon={Flag}
+                        label="Purok"
+                        value={form[`${prefix}_purok`]}
+                        onChangeText={(v) => updateField(`${prefix}_purok`, v)}
+                        placeholder="e.g., Purok 5"
+                        required
+                    />
+                )}
+
+                <Field
+                    icon={Building2}
+                    label="Barangay"
+                    value={form[`${prefix}_barangay`]}
+                    onChangeText={(v) => updateField(`${prefix}_barangay`, v)}
+                    placeholder="e.g., Brgy. Bool"
+                    required
+                />
+
+                <View style={styles.row}>
+                    <View style={{ flex: 1 }}>
+                        <Field
+                            icon={Building2}
+                            label="City / Municipality"
+                            value={form[`${prefix}_city`]}
+                            onChangeText={(v) => updateField(`${prefix}_city`, v)}
+                            placeholder={isManila ? 'e.g., Makati City' : 'e.g., Tagbilaran City'}
+                            required
+                        />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Field
+                            icon={Map}
+                            label="Province"
+                            value={form[`${prefix}_province`]}
+                            onChangeText={(v) => updateField(`${prefix}_province`, v)}
+                            placeholder={isManila ? 'Metro Manila' : 'Bohol'}
+                            required
+                        />
+                    </View>
+                </View>
+
+                <Field
+                    icon={MapPin}
+                    label="Zip Code"
+                    value={form[`${prefix}_zip_code`]}
+                    onChangeText={(v) => updateField(`${prefix}_zip_code`, v)}
+                    placeholder="e.g., 6300"
+                    keyboardType="numeric"
+                />
+
+                <Field
+                    icon={Navigation}
+                    label="Landmark"
+                    value={form[`${prefix}_landmark`]}
+                    onChangeText={(v) => updateField(`${prefix}_landmark`, v)}
+                    placeholder={isManila ? 'e.g., Near Glorietta Mall' : 'e.g., Near Bool Church'}
+                    required
+                />
+            </>
+        );
     };
 
     return (
@@ -87,53 +230,35 @@ export default function BookShipment() {
                     {/* Item Details */}
                     <Text style={styles.sectionTitle}>Item Details</Text>
 
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Item Description <Text style={styles.required}>*</Text></Text>
-                        <View style={[styles.inputWrap, { alignItems: 'flex-start' }]}>
-                            <Package size={18} color={Colors.primary} style={[styles.inputIcon, { marginTop: 16 }]} />
-                            <TextInput
-                                style={[styles.input, styles.inputMultiline]}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.item_description}
-                                onChangeText={(v) => updateField('item_description', v)}
-                                placeholder="e.g., 2 boxes of clothes, 1 laptop bag"
-                                multiline
-                                numberOfLines={3}
-                            />
-                        </View>
-                    </View>
+                    <Field
+                        icon={Package}
+                        label="Item Description"
+                        value={form.item_description}
+                        onChangeText={(v) => updateField('item_description', v)}
+                        placeholder="e.g., 2 boxes of clothes, 1 laptop bag"
+                        required
+                        multiline
+                    />
 
                     <View style={styles.row}>
                         <View style={{ flex: 1 }}>
-                            <View style={styles.fieldGroup}>
-                                <Text style={styles.label}>Quantity</Text>
-                                <View style={styles.inputWrap}>
-                                    <Layers size={18} color={Colors.primary} style={styles.inputIcon} />
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholderTextColor={Colors.textLight}
-                                        value={form.quantity}
-                                        onChangeText={(v) => updateField('quantity', v)}
-                                        placeholder="1"
-                                        keyboardType="numeric"
-                                    />
-                                </View>
-                            </View>
+                            <Field
+                                icon={Layers}
+                                label="Quantity"
+                                value={form.quantity}
+                                onChangeText={(v) => updateField('quantity', v)}
+                                placeholder="1"
+                                keyboardType="numeric"
+                            />
                         </View>
                         <View style={{ flex: 1 }}>
-                            <View style={styles.fieldGroup}>
-                                <Text style={styles.label}>Weight (est.)</Text>
-                                <View style={styles.inputWrap}>
-                                    <Weight size={18} color={Colors.primary} style={styles.inputIcon} />
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholderTextColor={Colors.textLight}
-                                        value={form.weight_estimate}
-                                        onChangeText={(v) => updateField('weight_estimate', v)}
-                                        placeholder="e.g., 5kg"
-                                    />
-                                </View>
-                            </View>
+                            <Field
+                                icon={Weight}
+                                label="Weight (est.)"
+                                value={form.weight_estimate}
+                                onChangeText={(v) => updateField('weight_estimate', v)}
+                                placeholder="e.g., 5kg"
+                            />
                         </View>
                     </View>
 
@@ -153,99 +278,61 @@ export default function BookShipment() {
                         </View>
                     </View>
 
-                    {/* Pickup Info */}
-                    <Text style={styles.sectionTitle}>Pickup Information</Text>
+                    {/* Sender Info */}
+                    <Text style={styles.sectionTitle}>Sender Information</Text>
 
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Pickup Address <Text style={styles.required}>*</Text></Text>
-                        <View style={styles.inputWrap}>
-                            <MapPin size={18} color={Colors.primary} style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.pickup_address}
-                                onChangeText={(v) => updateField('pickup_address', v)}
-                                placeholder="Full pickup address"
-                            />
-                        </View>
-                    </View>
+                    <Field
+                        icon={User}
+                        label="Sender Name"
+                        value={form.sender_name}
+                        onChangeText={(v) => updateField('sender_name', v)}
+                        placeholder="Full name of sender"
+                    />
 
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Pickup City</Text>
-                        <View style={styles.inputWrap}>
-                            <Building2 size={18} color={Colors.primary} style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.pickup_city}
-                                onChangeText={(v) => updateField('pickup_city', v)}
-                                placeholder="City / Municipality"
-                            />
-                        </View>
-                    </View>
+                    <Field
+                        icon={Phone}
+                        label="Sender Phone"
+                        value={form.sender_phone}
+                        onChangeText={(v) => updateField('sender_phone', v)}
+                        placeholder="09XX XXX XXXX"
+                        keyboardType="phone-pad"
+                    />
 
-                    {/* Delivery Info */}
-                    <Text style={styles.sectionTitle}>Delivery Information</Text>
+                    {/* Pickup Address */}
+                    {renderAddressSection('pickup', pickupIsManila)}
 
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Delivery Address <Text style={styles.required}>*</Text></Text>
-                        <View style={styles.inputWrap}>
-                            <Navigation size={18} color={Colors.primary} style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.delivery_address}
-                                onChangeText={(v) => updateField('delivery_address', v)}
-                                placeholder="Full delivery address"
-                            />
-                        </View>
-                    </View>
-
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Delivery City</Text>
-                        <View style={styles.inputWrap}>
-                            <Building2 size={18} color={Colors.primary} style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.delivery_city}
-                                onChangeText={(v) => updateField('delivery_city', v)}
-                                placeholder="City / Municipality"
-                            />
-                        </View>
-                    </View>
+                    {/* Delivery Address */}
+                    {renderAddressSection('delivery', deliveryIsManila)}
 
                     {/* Receiver Info */}
                     <Text style={styles.sectionTitle}>Receiver Information</Text>
 
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Receiver Name <Text style={styles.required}>*</Text></Text>
-                        <View style={styles.inputWrap}>
-                            <User size={18} color={Colors.primary} style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.receiver_name}
-                                onChangeText={(v) => updateField('receiver_name', v)}
-                                placeholder="Full name of receiver"
-                            />
-                        </View>
-                    </View>
+                    <Field
+                        icon={User}
+                        label="Receiver Name"
+                        value={form.receiver_name}
+                        onChangeText={(v) => updateField('receiver_name', v)}
+                        placeholder="Full name of receiver"
+                        required
+                    />
 
-                    <View style={styles.fieldGroup}>
-                        <Text style={styles.label}>Receiver Phone <Text style={styles.required}>*</Text></Text>
-                        <View style={styles.inputWrap}>
-                            <Phone size={18} color={Colors.primary} style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={Colors.textLight}
-                                value={form.receiver_phone}
-                                onChangeText={(v) => updateField('receiver_phone', v)}
-                                placeholder="09XX XXX XXXX"
-                                keyboardType="phone-pad"
-                            />
-                        </View>
-                    </View>
+                    <Field
+                        icon={Phone}
+                        label="Receiver Phone"
+                        value={form.receiver_phone}
+                        onChangeText={(v) => updateField('receiver_phone', v)}
+                        placeholder="09XX XXX XXXX"
+                        keyboardType="phone-pad"
+                    />
+
+                    <Field
+                        icon={User}
+                        label="Receiver Facebook Name"
+                        value={form.receiver_fb_name}
+                        onChangeText={(v) => updateField('receiver_fb_name', v)}
+                        placeholder="e.g., Juan Dela Cruz"
+                        iconColor={Colors.info}
+                    />
 
                     {/* Submit */}
                     <TouchableOpacity
@@ -264,7 +351,7 @@ export default function BookShipment() {
                         )}
                     </TouchableOpacity>
 
-                    <View style={{ height: 40 }} />
+                    <View style={{ height: 80 }} />
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
