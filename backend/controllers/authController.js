@@ -241,6 +241,45 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
+// Verify Reset Code — Step 2 of 3
+exports.verifyResetCode = async (req, res) => {
+    try {
+        const { email, code } = req.body;
+
+        if (!email || !code) {
+            return res.status(400).json({ success: false, message: 'Email and code are required' });
+        }
+
+        const [users] = await pool.query(
+            'SELECT id, reset_token, reset_token_expires FROM users WHERE email = ? AND is_active = TRUE',
+            [email.toLowerCase()]
+        );
+
+        if (users.length === 0 || !users[0].reset_token) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired reset code' });
+        }
+
+        const user = users[0];
+
+        // Check expiry
+        if (new Date() > new Date(user.reset_token_expires)) {
+            await pool.query('UPDATE users SET reset_token = NULL, reset_token_expires = NULL WHERE id = ?', [user.id]);
+            return res.status(400).json({ success: false, message: 'Reset code has expired. Please request a new one.' });
+        }
+
+        // Verify code
+        const isValid = await bcrypt.compare(code, user.reset_token);
+        if (!isValid) {
+            return res.status(400).json({ success: false, message: 'Invalid reset code' });
+        }
+
+        res.json({ success: true, message: 'Reset code verified successfully.' });
+    } catch (error) {
+        console.error('Verify reset code error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 // Reset Password — Verify code and set new password
 exports.resetPassword = async (req, res) => {
     try {

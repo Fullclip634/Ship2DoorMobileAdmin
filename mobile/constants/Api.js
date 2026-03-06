@@ -30,6 +30,7 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/api/auth/profile',
     CHANGE_PASSWORD: '/api/auth/change-password',
     FORGOT_PASSWORD: '/api/auth/forgot-password',
+    VERIFY_RESET_CODE: '/api/auth/verify-reset-code',
     RESET_PASSWORD: '/api/auth/reset-password',
     PUSH_TOKEN: '/api/auth/push-token',
 
