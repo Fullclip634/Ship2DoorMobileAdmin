@@ -4,6 +4,8 @@
  * Uses keyword matching to classify user messages into intents
  * and return pre-written, Ship2Door-specific responses.
  * Accepts optional context (orders, trips) for personalised answers.
+ *
+ * Now includes ticket escalation flow support.
  */
 
 // ────────────────────────────────────────────────
@@ -15,7 +17,7 @@ const INTENTS = [
         keywords: ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening', 'sup', 'yo'],
         response: () => ({
             text: "Hi there! 👋 I'm your Ship2Door assistant. How can I help you today?",
-            quickReplies: ['How to book', 'Track my order', 'Delivery time', 'Contact support'],
+            quickReplies: ['How to book', 'Track my order', 'Delivery time', 'Report an issue'],
         }),
     },
     {
@@ -37,7 +39,7 @@ const INTENTS = [
             if (activeOrders.length === 0) {
                 return {
                     text: "📋 You don't have any active orders right now.\n\nTo book a new shipment, go to the **Trips** tab and select an upcoming trip.",
-                    quickReplies: ['How to book', 'Trip schedule', 'Contact support'],
+                    quickReplies: ['How to book', 'Trip schedule', 'Report an issue'],
                 };
             }
 
@@ -48,7 +50,7 @@ const INTENTS = [
 
             return {
                 text: `📋 You have **${activeOrders.length}** active order${activeOrders.length > 1 ? 's' : ''}:\n\n${orderLines}\n\nGo to **My Orders** to view full details.`,
-                quickReplies: ['Delivery time', 'Cancel order', 'Contact support'],
+                quickReplies: ['Delivery time', 'Report an issue', 'Contact support'],
             };
         },
     },
@@ -65,7 +67,7 @@ const INTENTS = [
         keywords: ['cancel', 'refund', 'remove', 'delete order', 'undo'],
         response: () => ({
             text: "❌ **Cancelling an Order**\n\nYou can cancel an order **only while it's still pending**.\n\n1. Go to **My Orders**\n2. Tap the order you want to cancel\n3. Tap **\"Cancel Order\"** at the bottom\n\nOnce an order is confirmed or picked up, it cannot be cancelled. Please contact support for special cases.",
-            quickReplies: ['Track my order', 'Contact support', 'Pricing info'],
+            quickReplies: ['Track my order', 'Report an issue', 'Pricing info'],
         }),
     },
     {
@@ -73,7 +75,7 @@ const INTENTS = [
         keywords: ['price', 'cost', 'fee', 'how much', 'rate', 'charge', 'payment', 'pay'],
         response: () => ({
             text: "💰 **Pricing Information**\n\nShipping rates are based on the size and weight of your items. For a detailed quote, please contact our support team.\n\n📧 support@ship2door.com\n📱 Contact through the app\n\nPayment can be arranged upon booking confirmation.",
-            quickReplies: ['How to book', 'Contact support', 'Delivery time'],
+            quickReplies: ['How to book', 'Report an issue', 'Delivery time'],
         }),
     },
     {
@@ -85,7 +87,7 @@ const INTENTS = [
             if (trips.length === 0) {
                 return {
                     text: "📅 There are no upcoming trips scheduled at the moment.\n\nCheck back soon or enable notifications to be alerted when new trips are posted!",
-                    quickReplies: ['How to book', 'Contact support'],
+                    quickReplies: ['How to book', 'Report an issue'],
                 };
             }
 
@@ -112,8 +114,8 @@ const INTENTS = [
         id: 'contact_support',
         keywords: ['contact', 'phone', 'email', 'support', 'help', 'agent', 'human', 'speak', 'call', 'reach'],
         response: () => ({
-            text: "📞 **Contact Support**\n\n• **Email**: support@ship2door.com\n• **Phone**: +63 XXX XXX XXXX\n• **Hours**: Monday – Saturday, 8 AM – 6 PM\n\nOur team typically responds within 24 hours. For urgent matters, please call directly.",
-            quickReplies: ['How to book', 'Track my order', 'Pricing info'],
+            text: "📞 **Contact Support**\n\n• **Email**: support@ship2door.com\n• **Phone**: +63 XXX XXX XXXX\n• **Hours**: Monday – Saturday, 8 AM – 6 PM\n\nOr you can create a **support ticket** right here and our team will respond!\n\nWould you like to report an issue?",
+            quickReplies: ['Report an issue', 'How to book', 'Track my order'],
         }),
     },
     {
@@ -121,7 +123,25 @@ const INTENTS = [
         keywords: ['password', 'account', 'profile', 'login', 'sign in', 'change password', 'edit', 'update'],
         response: () => ({
             text: "🔑 **Account Help**\n\n• **Update Profile**: Go to **Profile → Personal Information**\n• **Change Password**: Go to **Profile → Change Password**\n• **Forgot Password**: On the login screen, tap **\"Forgot Password?\"** to receive a reset code via email\n\nIf you're having trouble, contact our support team.",
-            quickReplies: ['Contact support', 'How to book', 'Track my order'],
+            quickReplies: ['Report an issue', 'How to book', 'Track my order'],
+        }),
+    },
+    {
+        id: 'create_ticket',
+        keywords: ['report', 'issue', 'problem', 'complaint', 'damaged', 'missing', 'wrong', 'broken', 'lost', 'late', 'delayed', 'ticket', 'escalate'],
+        response: () => ({
+            text: "🎫 I'm sorry to hear you're having an issue. I'll help you **create a support ticket** so our team can assist you.\n\nWhat type of issue are you experiencing?",
+            quickReplies: ['📦 Order Issue', '🚚 Delivery Problem', '💰 Payment', '❓ General Inquiry', '🐛 App Bug'],
+            action: 'START_TICKET_FLOW',
+        }),
+    },
+    {
+        id: 'view_tickets',
+        keywords: ['my tickets', 'ticket status', 'tickets', 'view ticket', 'check ticket'],
+        response: () => ({
+            text: "🎫 You can view all your support tickets in **My Tickets**.\n\nGo to **Profile → My Tickets** or tap below to check on an existing ticket.",
+            quickReplies: ['Report an issue', 'Track my order', 'Contact support'],
+            action: 'VIEW_TICKETS',
         }),
     },
     {
@@ -129,7 +149,7 @@ const INTENTS = [
         keywords: ['thanks', 'thank you', 'thank', 'appreciate', 'helpful', 'great', 'awesome', 'nice'],
         response: () => ({
             text: "You're welcome! 😊 Happy to help. Is there anything else I can assist you with?",
-            quickReplies: ['How to book', 'Track my order', 'Trip schedule', 'Contact support'],
+            quickReplies: ['How to book', 'Track my order', 'Trip schedule', 'Report an issue'],
         }),
     },
     {
@@ -141,6 +161,25 @@ const INTENTS = [
         }),
     },
 ];
+
+// ────────────────────────────────────────────────
+// Ticket Flow Category Mapping
+// ────────────────────────────────────────────────
+export const TICKET_CATEGORIES = {
+    '📦 Order Issue': 'order_issue',
+    '🚚 Delivery Problem': 'delivery_problem',
+    '💰 Payment': 'payment',
+    '❓ General Inquiry': 'general_inquiry',
+    '🐛 App Bug': 'app_bug',
+};
+
+export const CATEGORY_LABELS = {
+    order_issue: '📦 Order Issue',
+    delivery_problem: '🚚 Delivery Problem',
+    payment: '💰 Payment',
+    general_inquiry: '❓ General Inquiry',
+    app_bug: '🐛 App Bug',
+};
 
 // ────────────────────────────────────────────────
 // Helpers
@@ -167,7 +206,7 @@ function formatStatus(status) {
  * Process a user message and return a bot response.
  * @param {string} message   – The user's input text
  * @param {object} context   – Optional { orders: [], trips: [] }
- * @returns {{ text: string, quickReplies: string[] }}
+ * @returns {{ text: string, quickReplies: string[], action?: string }}
  */
 export function getBotResponse(message, context = {}) {
     const input = message.toLowerCase().trim();
@@ -175,7 +214,7 @@ export function getBotResponse(message, context = {}) {
     if (!input) {
         return {
             text: "I didn't catch that. Could you rephrase your question?",
-            quickReplies: ['How to book', 'Track my order', 'Contact support'],
+            quickReplies: ['How to book', 'Track my order', 'Report an issue'],
         };
     }
 
@@ -204,7 +243,7 @@ export function getBotResponse(message, context = {}) {
     // Fallback – no intent matched
     return {
         text: "I'm not sure I understand that question. Here are some things I can help you with:",
-        quickReplies: ['How to book', 'Track my order', 'Delivery time', 'Pricing info', 'Trip schedule', 'Contact support'],
+        quickReplies: ['How to book', 'Track my order', 'Delivery time', 'Pricing info', 'Report an issue'],
     };
 }
 
@@ -213,7 +252,7 @@ export function getBotResponse(message, context = {}) {
  */
 export function getWelcomeMessage() {
     return {
-        text: "👋 **Welcome to Ship2Door Support!**\n\nI'm your virtual assistant. I can help you with booking shipments, tracking orders, delivery times, and more.\n\nTap a topic below or type your question!",
-        quickReplies: ['How to book', 'Track my order', 'Delivery time', 'Trip schedule', 'Pricing info', 'Contact support'],
+        text: "👋 **Welcome to Ship2Door Support!**\n\nI'm your virtual assistant. I can help you with booking shipments, tracking orders, delivery times, and more.\n\nIf you need human support, just say **\"report an issue\"** and I'll create a ticket for you!\n\nTap a topic below or type your question!",
+        quickReplies: ['How to book', 'Track my order', 'Delivery time', 'Trip schedule', 'Report an issue'],
     };
 }

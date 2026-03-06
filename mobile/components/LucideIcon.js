@@ -18,7 +18,7 @@ import {
     Search, Flag, Truck, Waves, Bike,
     Weight, Layers, FileText, File,
     ShieldCheck, Megaphone,
-    Trash2, Send, MessageCircle, HelpCircle,
+    Trash2, Send, MessageCircle, HelpCircle, Ticket,
     LogOut, Navigation, Building2, Map,
     Grid3X3, CircleDot, ChevronUp, Pin, BarChart3, AlertTriangle
 } from 'lucide-react-native';
@@ -105,6 +105,7 @@ const iconMap = {
     'pin': Pin,
     'bar-chart-3': BarChart3,
     'alert-triangle': AlertTriangle,
+    'ticket': Ticket,
 };
 
 /**

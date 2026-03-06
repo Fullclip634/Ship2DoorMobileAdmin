@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { BarChart3, Ship, Package, Megaphone, User } from 'lucide-react-native';
+import { BarChart3, Ship, Package, Megaphone, User, Ticket } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -73,6 +73,9 @@ export default function AdminLayout() {
             <Tabs.Screen name="order-detail" options={{ href: null }} />
             <Tabs.Screen name="customers" options={{ href: null }} />
             <Tabs.Screen name="personal-info" options={{ href: null }} />
+            <Tabs.Screen name="tickets" options={{ href: null }} />
+            <Tabs.Screen name="ticket-detail" options={{ href: null }} />
+            <Tabs.Screen name="notifications" options={{ href: null }} />
         </Tabs>
     );
 }

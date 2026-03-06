@@ -74,6 +74,8 @@ export default function ForgotPasswordScreen() {
                 Alert.alert('Success', 'Your password has been reset. Please sign in.', [
                     { text: 'Sign In', onPress: () => router.replace('/login') },
                 ]);
+            } else {
+                Alert.alert('Error', res.message || 'Failed to reset password.');
             }
         } catch (e) {
             Alert.alert('Error', e.message || 'Failed to reset password.');

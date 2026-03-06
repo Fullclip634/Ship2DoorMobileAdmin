@@ -4,7 +4,7 @@
  * Run: node seed.js
  */
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const pool = require('./config/db');
 require('dotenv').config();
 

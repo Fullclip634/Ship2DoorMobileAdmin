@@ -52,4 +52,7 @@ export const API_ENDPOINTS = {
 
     // Broadcast
     BROADCAST: '/api/broadcast',
+
+    // Tickets
+    TICKETS: '/api/tickets',
 };

@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { Plus, Truck, ChevronRight, PlusCircle, Users, Megaphone } from 'lucide-react-native';
+import { Plus, Truck, ChevronRight, PlusCircle, Users, Megaphone, Ticket, Bell } from 'lucide-react-native';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 import { StatCard, StatusBadge, DirectionBadge, SectionHeader } from '../../components/UIComponents';
@@ -19,17 +19,21 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState({ active_trips: 0, pending_orders: 0, total_customers: 0, total_delivered: 0, today_pickups: 0 });
     const [recentOrders, setRecentOrders] = useState([]);
     const [activeTrips, setActiveTrips] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const loadData = async () => {
         try {
-            const [statsRes, ordersRes, tripsRes] = await Promise.all([
+            const [statsRes, ordersRes, tripsRes, notifsRes] = await Promise.all([
                 api.get(API_ENDPOINTS.DASHBOARD),
                 api.get(API_ENDPOINTS.ORDERS),
                 api.get(API_ENDPOINTS.UPCOMING_TRIPS),
+                api.get(API_ENDPOINTS.NOTIFICATIONS),
             ]);
             setStats(statsRes.data || {});
             setRecentOrders((ordersRes.data || []).slice(0, 5));
             setActiveTrips((tripsRes.data || []).slice(0, 3));
+            const allNotifs = notifsRes.data?.notifications || [];
+            setUnreadCount(allNotifs.filter(n => !n.is_read).length);
         } catch (e) {
             console.error(e);
         }
@@ -57,12 +61,25 @@ export default function AdminDashboard() {
                         <Text style={styles.greeting}>Ship<Text style={styles.greetingAccent}>2</Text>Door Admin</Text>
                         <Text style={styles.headerSub}>Welcome back, {user?.first_name}</Text>
                     </View>
-                    <TouchableOpacity
-                        style={styles.addBtn}
-                        onPress={() => router.push('/(admin)/create-trip')}
-                    >
-                        <Plus size={24} color={Colors.white} />
-                    </TouchableOpacity>
+                    <View style={styles.headerActions}>
+                        <TouchableOpacity
+                            style={styles.bellBtn}
+                            onPress={() => router.push('/(admin)/notifications')}
+                        >
+                            <Bell size={22} color={Colors.secondary} />
+                            {unreadCount > 0 && (
+                                <View style={styles.bellBadge}>
+                                    <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.addBtn}
+                            onPress={() => router.push('/(admin)/create-trip')}
+                        >
+                            <Plus size={24} color={Colors.white} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* Stats Row 1 */}
@@ -90,19 +107,27 @@ export default function AdminDashboard() {
                 )}
 
                 {/* Quick Actions */}
-                <View style={styles.quickRow}>
-                    <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/create-trip')}>
-                        <PlusCircle size={20} color={Colors.secondary} />
-                        <Text style={styles.quickText}>New Trip</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/customers')}>
-                        <Users size={20} color={Colors.secondary} />
-                        <Text style={styles.quickText}>Customers</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/announcements')}>
-                        <Megaphone size={20} color={Colors.secondary} />
-                        <Text style={styles.quickText}>Announce</Text>
-                    </TouchableOpacity>
+                <View style={styles.quickGrid}>
+                    <View style={styles.quickRow}>
+                        <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/create-trip')}>
+                            <PlusCircle size={22} color={Colors.secondary} />
+                            <Text style={styles.quickText}>New Trip</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/customers')}>
+                            <Users size={22} color={Colors.secondary} />
+                            <Text style={styles.quickText}>Customers</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.quickRow}>
+                        <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/announcements')}>
+                            <Megaphone size={22} color={Colors.secondary} />
+                            <Text style={styles.quickText}>Announce</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(admin)/tickets')}>
+                            <Ticket size={22} color={Colors.secondary} />
+                            <Text style={styles.quickText}>Tickets</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* Active Trips */}
@@ -153,7 +178,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: Colors.background },
     header: {
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-        paddingHorizontal: Spacing.xl, paddingTop: Spacing.xl, paddingBottom: Spacing.md,
+        paddingHorizontal: Spacing.lg, paddingTop: Spacing.xl, paddingBottom: Spacing.md,
     },
     greeting: { fontSize: Fonts.sizes.xxl, fontFamily: Fonts.extraBold, color: Colors.secondary, letterSpacing: -0.5 },
     greetingAccent: { color: Colors.primary },
@@ -163,25 +188,40 @@ const styles = StyleSheet.create({
         alignItems: 'center', justifyContent: 'center',
         shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
     },
-    statsRow: { flexDirection: 'row', paddingHorizontal: Spacing.xl, gap: Spacing.md, marginTop: Spacing.md },
+    headerActions: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+    bellBtn: {
+        width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.secondaryFaded,
+        alignItems: 'center', justifyContent: 'center',
+    },
+    bellBadge: {
+        position: 'absolute', top: 4, right: 4, minWidth: 18, height: 18,
+        borderRadius: 9, backgroundColor: Colors.error,
+        alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4,
+        borderWidth: 2, borderColor: Colors.secondaryFaded,
+    },
+    bellBadgeText: { fontSize: 9, fontWeight: '800', color: Colors.white },
+    statsRow: { flexDirection: 'row', paddingHorizontal: Spacing.lg, gap: Spacing.sm, marginTop: Spacing.md },
     pickupBanner: {
         flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-        backgroundColor: Colors.primary, marginHorizontal: Spacing.xl, marginTop: Spacing.lg,
+        backgroundColor: Colors.primary, marginHorizontal: Spacing.lg, marginTop: Spacing.lg,
         borderRadius: BorderRadius.lg, padding: Spacing.lg,
         shadowColor: Colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4,
     },
     pickupTitle: { fontSize: Fonts.sizes.md, fontFamily: Fonts.bold, color: Colors.white },
     pickupSub: { fontSize: Fonts.sizes.xs, fontFamily: Fonts.medium, color: 'rgba(255,255,255,0.8)' },
+    quickGrid: {
+        paddingHorizontal: Spacing.lg, marginTop: Spacing.lg, gap: Spacing.sm,
+    },
     quickRow: {
-        flexDirection: 'row', paddingHorizontal: Spacing.xl, gap: Spacing.md, marginTop: Spacing.xl,
+        flexDirection: 'row', gap: Spacing.sm,
     },
     quickBtn: {
-        flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+        flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6,
         backgroundColor: Colors.secondaryFaded, borderRadius: BorderRadius.md, paddingVertical: Spacing.md,
     },
     quickText: { fontSize: Fonts.sizes.xs, fontFamily: Fonts.bold, color: Colors.secondary },
     tripCard: {
-        backgroundColor: Colors.white, marginHorizontal: Spacing.xl, marginBottom: Spacing.sm,
+        backgroundColor: Colors.white, marginHorizontal: Spacing.lg, marginBottom: Spacing.sm,
         borderRadius: BorderRadius.lg, padding: Spacing.xl,
         shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 3,
     },
@@ -190,7 +230,7 @@ const styles = StyleSheet.create({
     tripDate: { fontSize: Fonts.sizes.sm, color: Colors.textSecondary, fontFamily: Fonts.medium },
     tripOrders: { fontSize: Fonts.sizes.sm, color: Colors.primary, fontFamily: Fonts.semiBold },
     orderCard: {
-        backgroundColor: Colors.white, marginHorizontal: Spacing.xl, marginBottom: Spacing.sm,
+        backgroundColor: Colors.white, marginHorizontal: Spacing.lg, marginBottom: Spacing.sm,
         borderRadius: BorderRadius.lg, padding: Spacing.xl,
         shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 3,
     },

@@ -2,13 +2,13 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TextInput,
     TouchableOpacity, KeyboardAvoidingView, Platform,
-    Animated,
+    Animated, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors, Fonts, Spacing, BorderRadius } from '../../constants/Colors';
-import { MessageCircle, Ship, ArrowLeft, Send } from 'lucide-react-native';
-import { getBotResponse, getWelcomeMessage } from '../../services/chatbot';
+import { MessageCircle, Ship, ArrowLeft, Send, Ticket } from 'lucide-react-native';
+import { getBotResponse, getWelcomeMessage, TICKET_CATEGORIES } from '../../services/chatbot';
 import api from '../../services/api';
 import { API_ENDPOINTS } from '../../constants/Api';
 
@@ -18,10 +18,11 @@ import { API_ENDPOINTS } from '../../constants/Api';
 let msgId = 0;
 const nextId = () => `msg_${++msgId}`;
 
-const createBotMessage = (text, quickReplies = []) => ({
+const createBotMessage = (text, quickReplies = [], action = null) => ({
     id: nextId(),
     text,
     quickReplies,
+    action,
     sender: 'bot',
     time: new Date(),
 });
@@ -32,6 +33,17 @@ const createUserMessage = (text) => ({
     sender: 'user',
     time: new Date(),
 });
+
+// ────────────────────────────────────────────────
+// Ticket Flow States
+// ────────────────────────────────────────────────
+const FLOW = {
+    NONE: 'NONE',
+    CATEGORY: 'CATEGORY',       // waiting for category selection
+    DESCRIPTION: 'DESCRIPTION', // waiting for issue description
+    ORDER_REF: 'ORDER_REF',     // waiting for optional order number
+    CONFIRMING: 'CONFIRMING',   // waiting for confirm/cancel
+};
 
 // ────────────────────────────────────────────────
 // Typing Indicator Dots
@@ -129,6 +141,15 @@ export default function SupportChatScreen() {
     const [isTyping, setIsTyping] = useState(false);
     const [context, setContext] = useState({ orders: [], trips: [] });
 
+    // Ticket flow state
+    const [ticketFlow, setTicketFlow] = useState(FLOW.NONE);
+    const [ticketDraft, setTicketDraft] = useState({
+        category: null,
+        subject: '',
+        description: '',
+        relatedOrderId: null,
+    });
+
     // Load user data for context-aware responses
     useFocusEffect(
         useCallback(() => {
@@ -156,24 +177,198 @@ export default function SupportChatScreen() {
         setMessages([createBotMessage(welcome.text, welcome.quickReplies)]);
     }, []);
 
-    const sendMessage = (text) => {
+    const addBotReply = useCallback((text, quickReplies = [], action = null) => {
+        setIsTyping(true);
+        setTimeout(() => {
+            setMessages((prev) => [...prev, createBotMessage(text, quickReplies, action)]);
+            setIsTyping(false);
+        }, 600 + Math.random() * 300);
+    }, []);
+
+    // ────────────────────────────────────────
+    // Ticket Flow Handler
+    // ────────────────────────────────────────
+    const handleTicketFlow = useCallback(async (text) => {
+        const userMsg = createUserMessage(text.trim());
+        setMessages((prev) => [...prev, userMsg]);
+        setInputText('');
+
+        switch (ticketFlow) {
+            case FLOW.CATEGORY: {
+                // User picked a category
+                const categoryKey = TICKET_CATEGORIES[text];
+                if (!categoryKey) {
+                    addBotReply(
+                        "Please select one of the categories below:",
+                        Object.keys(TICKET_CATEGORIES),
+                    );
+                    return;
+                }
+                setTicketDraft(prev => ({ ...prev, category: categoryKey, subject: text.replace(/^[^\s]+ /, '') }));
+                setTicketFlow(FLOW.DESCRIPTION);
+                addBotReply(
+                    "📝 Got it. Please **describe your issue** in detail so our team can help you.",
+                    ['Cancel ticket'],
+                );
+                break;
+            }
+
+            case FLOW.DESCRIPTION: {
+                if (text.toLowerCase() === 'cancel ticket') {
+                    setTicketFlow(FLOW.NONE);
+                    setTicketDraft({ category: null, subject: '', description: '', relatedOrderId: null });
+                    addBotReply(
+                        "Ticket creation cancelled. How else can I help you?",
+                        ['How to book', 'Track my order', 'Report an issue'],
+                    );
+                    return;
+                }
+                setTicketDraft(prev => ({ ...prev, description: text.trim() }));
+                setTicketFlow(FLOW.ORDER_REF);
+
+                const activeOrders = (context?.orders || []).filter(
+                    (o) => !['delivered', 'cancelled'].includes(o.status)
+                );
+
+                if (activeOrders.length > 0) {
+                    const orderReplies = activeOrders.slice(0, 4).map(o => o.order_number);
+                    addBotReply(
+                        "🔗 Is this related to a specific order? Tap an order below or type **\"skip\"** to proceed without one.",
+                        [...orderReplies, 'Skip'],
+                    );
+                } else {
+                    // No active orders, skip to confirmation
+                    setTicketFlow(FLOW.CONFIRMING);
+                    addBotReply(
+                        `🎫 **Ticket Summary**\n\n• **Category**: ${text}\n• **Issue**: ${text.trim().substring(0, 80)}...\n\nShall I submit this ticket?`,
+                        ['✅ Submit Ticket', 'Cancel ticket'],
+                    );
+                }
+                break;
+            }
+
+            case FLOW.ORDER_REF: {
+                if (text.toLowerCase() === 'cancel ticket') {
+                    setTicketFlow(FLOW.NONE);
+                    setTicketDraft({ category: null, subject: '', description: '', relatedOrderId: null });
+                    addBotReply(
+                        "Ticket creation cancelled. How else can I help you?",
+                        ['How to book', 'Track my order', 'Report an issue'],
+                    );
+                    return;
+                }
+
+                let relatedOrderId = null;
+                let orderRef = 'None';
+                if (text.toLowerCase() !== 'skip') {
+                    const matchedOrder = (context?.orders || []).find(o => o.order_number === text);
+                    if (matchedOrder) {
+                        relatedOrderId = matchedOrder.id;
+                        orderRef = text;
+                    }
+                }
+
+                setTicketDraft(prev => ({ ...prev, relatedOrderId }));
+                setTicketFlow(FLOW.CONFIRMING);
+
+                const draft = ticketDraft;
+                addBotReply(
+                    `🎫 **Ticket Summary**\n\n• **Category**: ${draft.subject || draft.category}\n• **Issue**: ${draft.description.substring(0, 100)}${draft.description.length > 100 ? '...' : ''}\n• **Related Order**: ${orderRef}\n\nShall I submit this ticket?`,
+                    ['✅ Submit Ticket', 'Cancel ticket'],
+                );
+                break;
+            }
+
+            case FLOW.CONFIRMING: {
+                if (text === '✅ Submit Ticket') {
+                    // Submit the ticket via API
+                    setIsTyping(true);
+                    setMessages((prev) => [...prev]);
+                    try {
+                        const payload = {
+                            category: ticketDraft.category,
+                            subject: ticketDraft.subject || ticketDraft.category.replace('_', ' '),
+                            message: ticketDraft.description,
+                            related_order_id: ticketDraft.relatedOrderId,
+                        };
+                        const res = await api.post(API_ENDPOINTS.TICKETS, payload);
+                        setIsTyping(false);
+
+                        if (res.success) {
+                            setMessages((prev) => [...prev, createBotMessage(
+                                `✅ **Ticket Created!**\n\n🎫 Ticket Number: **${res.data.ticket_number}**\n\nOur support team has been notified and will respond shortly. You can track your tickets in **My Tickets**.\n\nIs there anything else I can help with?`,
+                                ['View My Tickets', 'How to book', 'Track my order'],
+                                'TICKET_CREATED',
+                            )]);
+                        } else {
+                            setMessages((prev) => [...prev, createBotMessage(
+                                "❌ Sorry, I couldn't create the ticket. Please try again or contact support directly.",
+                                ['Report an issue', 'Contact support'],
+                            )]);
+                        }
+                    } catch (e) {
+                        setIsTyping(false);
+                        setMessages((prev) => [...prev, createBotMessage(
+                            "❌ Something went wrong while creating your ticket. Please try again.",
+                            ['Report an issue', 'Contact support'],
+                        )]);
+                    }
+
+                    setTicketFlow(FLOW.NONE);
+                    setTicketDraft({ category: null, subject: '', description: '', relatedOrderId: null });
+                } else {
+                    // Cancel
+                    setTicketFlow(FLOW.NONE);
+                    setTicketDraft({ category: null, subject: '', description: '', relatedOrderId: null });
+                    addBotReply(
+                        "Ticket creation cancelled. How else can I help you?",
+                        ['How to book', 'Track my order', 'Report an issue'],
+                    );
+                }
+                break;
+            }
+        }
+    }, [ticketFlow, ticketDraft, context, addBotReply]);
+
+    // ────────────────────────────────────────
+    // Normal Message Handler
+    // ────────────────────────────────────────
+    const sendMessage = useCallback((text) => {
         if (!text.trim()) return;
+
+        // If in ticket flow, delegate to ticket handler
+        if (ticketFlow !== FLOW.NONE) {
+            handleTicketFlow(text.trim());
+            return;
+        }
 
         const userMsg = createUserMessage(text.trim());
         setMessages((prev) => [...prev, userMsg]);
         setInputText('');
-        setIsTyping(true);
 
-        // Simulate thinking delay for realism
-        setTimeout(() => {
-            const botRes = getBotResponse(text.trim(), context);
-            const botMsg = createBotMessage(botRes.text, botRes.quickReplies);
-            setMessages((prev) => [...prev, botMsg]);
-            setIsTyping(false);
-        }, 800 + Math.random() * 400);
-    };
+        const botRes = getBotResponse(text.trim(), context);
+
+        // Check if the response triggers ticket flow
+        if (botRes.action === 'START_TICKET_FLOW') {
+            setTicketFlow(FLOW.CATEGORY);
+            addBotReply(botRes.text, botRes.quickReplies);
+            return;
+        }
+
+        if (botRes.action === 'VIEW_TICKETS') {
+            addBotReply(botRes.text, botRes.quickReplies);
+            return;
+        }
+
+        addBotReply(botRes.text, botRes.quickReplies);
+    }, [context, ticketFlow, handleTicketFlow, addBotReply]);
 
     const handleQuickReply = (reply) => {
+        // Handle navigation quick replies
+        if (reply === 'View My Tickets') {
+            router.push('/(customer)/my-tickets');
+            return;
+        }
         sendMessage(reply);
     };
 
@@ -198,10 +393,14 @@ export default function SupportChatScreen() {
                     </View>
                     <View>
                         <Text style={styles.headerTitle}>Ship2Door Support</Text>
-                        <Text style={styles.headerStatus}>Online • Typically replies instantly</Text>
+                        <Text style={styles.headerStatus}>
+                            {ticketFlow !== FLOW.NONE ? '🎫 Creating ticket...' : 'Online • Typically replies instantly'}
+                        </Text>
                     </View>
                 </View>
-                <View style={{ width: 44 }} />
+                <TouchableOpacity style={styles.ticketBtn} onPress={() => router.push('/(customer)/my-tickets')}>
+                    <Ticket size={20} color={Colors.primary} />
+                </TouchableOpacity>
             </View>
 
             {/* Messages */}
@@ -228,11 +427,19 @@ export default function SupportChatScreen() {
                         contentContainerStyle={styles.quickRepliesList}
                         renderItem={({ item }) => (
                             <TouchableOpacity
-                                style={styles.quickReplyChip}
+                                style={[
+                                    styles.quickReplyChip,
+                                    item === '✅ Submit Ticket' && styles.quickReplyChipSubmit,
+                                    item === 'Cancel ticket' && styles.quickReplyChipCancel,
+                                ]}
                                 onPress={() => handleQuickReply(item)}
                                 activeOpacity={0.7}
                             >
-                                <Text style={styles.quickReplyText}>{item}</Text>
+                                <Text style={[
+                                    styles.quickReplyText,
+                                    item === '✅ Submit Ticket' && styles.quickReplyTextSubmit,
+                                    item === 'Cancel ticket' && styles.quickReplyTextCancel,
+                                ]}>{item}</Text>
                             </TouchableOpacity>
                         )}
                     />
@@ -248,7 +455,7 @@ export default function SupportChatScreen() {
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={styles.input}
-                            placeholder="Type your question..."
+                            placeholder={ticketFlow === FLOW.DESCRIPTION ? 'Describe your issue...' : 'Type your question...'}
                             placeholderTextColor={Colors.textLight}
                             value={inputText}
                             onChangeText={setInputText}
@@ -275,228 +482,98 @@ export default function SupportChatScreen() {
 // Styles
 // ────────────────────────────────────────────────
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background,
-    },
+    container: { flex: 1, backgroundColor: Colors.background },
 
     // Header
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.md,
-        backgroundColor: Colors.white,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.borderLight,
+        flexDirection: 'row', alignItems: 'center',
+        paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+        backgroundColor: Colors.white, borderBottomWidth: 1, borderBottomColor: Colors.borderLight,
     },
-    backBtn: {
-        width: 44,
-        height: 44,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    headerCenter: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: Spacing.md,
-    },
+    backBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+    headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
     headerAvatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: Colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primary,
+        alignItems: 'center', justifyContent: 'center',
     },
-    headerTitle: {
-        fontSize: Fonts.sizes.md,
-        fontWeight: '700',
-        color: Colors.text,
-    },
-    headerStatus: {
-        fontSize: Fonts.sizes.xs,
-        color: Colors.success,
-        fontWeight: '500',
-        marginTop: 1,
+    headerTitle: { fontSize: Fonts.sizes.md, fontWeight: '700', color: Colors.text },
+    headerStatus: { fontSize: Fonts.sizes.xs, color: Colors.success, fontWeight: '500', marginTop: 1 },
+    ticketBtn: {
+        width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primaryFaded,
+        alignItems: 'center', justifyContent: 'center',
     },
 
     // Messages
-    messageList: {
-        paddingHorizontal: Spacing.lg,
-        paddingTop: Spacing.lg,
-        paddingBottom: Spacing.sm,
-    },
-    bubbleRow: {
-        flexDirection: 'row',
-        marginBottom: Spacing.md,
-        alignItems: 'flex-end',
-    },
-    bubbleRowBot: {
-        justifyContent: 'flex-start',
-    },
-    bubbleRowUser: {
-        justifyContent: 'flex-end',
-    },
+    messageList: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: Spacing.sm },
+    bubbleRow: { flexDirection: 'row', marginBottom: Spacing.md, alignItems: 'flex-end' },
+    bubbleRowBot: { justifyContent: 'flex-start' },
+    bubbleRowUser: { justifyContent: 'flex-end' },
     botAvatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: Colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: Spacing.sm,
+        width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.primary,
+        alignItems: 'center', justifyContent: 'center', marginRight: Spacing.sm,
     },
-    bubble: {
-        maxWidth: '78%',
-        borderRadius: BorderRadius.lg,
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.md,
-    },
+    bubble: { maxWidth: '78%', borderRadius: BorderRadius.lg, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
     bubbleBot: {
-        backgroundColor: Colors.white,
-        borderBottomLeftRadius: 4,
-        shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.04,
-        shadowRadius: 4,
-        elevation: 1,
+        backgroundColor: Colors.white, borderBottomLeftRadius: 4,
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
     },
     bubbleUser: {
-        backgroundColor: Colors.primary,
-        borderBottomRightRadius: 4,
-        shadowColor: Colors.primary,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 2,
+        backgroundColor: Colors.primary, borderBottomRightRadius: 4,
+        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2,
     },
-    bubbleText: {
-        fontSize: Fonts.sizes.sm,
-        lineHeight: 20,
-    },
-    bubbleTextBot: {
-        color: Colors.text,
-    },
-    bubbleTextUser: {
-        color: Colors.white,
-    },
-    bubbleTime: {
-        fontSize: 10,
-        marginTop: 4,
-        textAlign: 'right',
-    },
-    bubbleTimeBot: {
-        color: Colors.textLight,
-    },
-    bubbleTimeUser: {
-        color: 'rgba(255,255,255,0.7)',
-    },
+    bubbleText: { fontSize: Fonts.sizes.sm, lineHeight: 20 },
+    bubbleTextBot: { color: Colors.text },
+    bubbleTextUser: { color: Colors.white },
+    bubbleTime: { fontSize: 10, marginTop: 4, textAlign: 'right' },
+    bubbleTimeBot: { color: Colors.textLight },
+    bubbleTimeUser: { color: 'rgba(255,255,255,0.7)' },
 
     // Typing indicator
-    typingRow: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        marginBottom: Spacing.md,
-    },
+    typingRow: { flexDirection: 'row', alignItems: 'flex-end', marginBottom: Spacing.md },
     botAvatarSmall: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: Colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: Spacing.sm,
+        width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.primary,
+        alignItems: 'center', justifyContent: 'center', marginRight: Spacing.sm,
     },
     typingBubble: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-        backgroundColor: Colors.white,
-        borderRadius: BorderRadius.lg,
-        borderBottomLeftRadius: 4,
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.md,
-        height: 40,
-        shadowColor: Colors.shadow,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.04,
-        shadowRadius: 4,
-        elevation: 1,
+        flexDirection: 'row', alignItems: 'center', gap: 5,
+        backgroundColor: Colors.white, borderRadius: BorderRadius.lg, borderBottomLeftRadius: 4,
+        paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, height: 40,
+        shadowColor: Colors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
     },
-    typingDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: Colors.textLight,
-    },
+    typingDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.textLight },
 
     // Quick Replies
-    quickRepliesContainer: {
-        borderTopWidth: 1,
-        borderTopColor: Colors.borderLight,
-        backgroundColor: Colors.white,
-    },
-    quickRepliesList: {
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.sm,
-        gap: Spacing.sm,
-    },
+    quickRepliesContainer: { borderTopWidth: 1, borderTopColor: Colors.borderLight, backgroundColor: Colors.white },
+    quickRepliesList: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, gap: Spacing.sm },
     quickReplyChip: {
-        borderWidth: 1.5,
-        borderColor: Colors.primary,
-        borderRadius: BorderRadius.full,
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.sm,
-        backgroundColor: Colors.primaryFaded,
+        borderWidth: 1.5, borderColor: Colors.primary, borderRadius: BorderRadius.full,
+        paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: Colors.primaryFaded,
     },
-    quickReplyText: {
-        fontSize: Fonts.sizes.sm,
-        fontWeight: '600',
-        color: Colors.primary,
+    quickReplyChipSubmit: {
+        borderColor: Colors.success, backgroundColor: Colors.success,
     },
+    quickReplyTextSubmit: { color: Colors.white },
+    quickReplyChipCancel: {
+        borderColor: Colors.error + '60', backgroundColor: Colors.errorLight,
+    },
+    quickReplyTextCancel: { color: Colors.error },
+    quickReplyText: { fontSize: Fonts.sizes.sm, fontWeight: '600', color: Colors.primary },
 
     // Input Bar
     inputBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: Spacing.lg,
-        paddingVertical: Spacing.sm,
-        backgroundColor: Colors.white,
-        borderTopWidth: 1,
-        borderTopColor: Colors.borderLight,
-        gap: Spacing.sm,
+        flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.lg,
+        paddingVertical: Spacing.sm, backgroundColor: Colors.white,
+        borderTopWidth: 1, borderTopColor: Colors.borderLight, gap: Spacing.sm,
     },
     inputContainer: {
-        flex: 1,
-        backgroundColor: Colors.background,
-        borderRadius: BorderRadius.full,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        paddingHorizontal: Spacing.lg,
-        height: 44,
-        justifyContent: 'center',
+        flex: 1, backgroundColor: Colors.background, borderRadius: BorderRadius.full,
+        borderWidth: 1, borderColor: Colors.border, paddingHorizontal: Spacing.lg, height: 44, justifyContent: 'center',
     },
-    input: {
-        fontSize: Fonts.sizes.md,
-        color: Colors.text,
-        height: '100%',
-    },
+    input: { fontSize: Fonts.sizes.md, color: Colors.text, height: '100%' },
     sendBtn: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: Colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: Colors.primary,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 3,
+        width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary,
+        alignItems: 'center', justifyContent: 'center',
+        shadowColor: Colors.primary, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 3,
     },
-    sendBtnDisabled: {
-        opacity: 0.5,
-    },
+    sendBtnDisabled: { opacity: 0.5 },
 });

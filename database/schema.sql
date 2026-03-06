@@ -113,10 +113,42 @@ CREATE TABLE notifications (
     message TEXT NOT NULL,
     type ENUM('trip_update', 'order_update', 'pickup_schedule', 'delay', 'announcement', 'general') NOT NULL DEFAULT 'general',
     reference_id INT,
-    reference_type ENUM('trip', 'order', 'announcement'),
+    reference_type ENUM('trip', 'order', 'announcement', 'ticket'),
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- TICKETS TABLE (Support ticket system)
+-- ============================================================
+CREATE TABLE tickets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_number VARCHAR(20) NOT NULL UNIQUE,
+    customer_id INT NOT NULL,
+    category ENUM('order_issue','delivery_problem','payment','general_inquiry','app_bug') NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    status ENUM('open','in_progress','resolved','closed') NOT NULL DEFAULT 'open',
+    priority ENUM('low','medium','high') NOT NULL DEFAULT 'medium',
+    related_order_id INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (related_order_id) REFERENCES orders(id) ON DELETE SET NULL
+);
+
+-- ============================================================
+-- TICKET MESSAGES TABLE
+-- ============================================================
+CREATE TABLE ticket_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    sender_role ENUM('customer','admin') NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- ============================================================

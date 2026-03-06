@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const generalRoutes = require('./routes/generalRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api', generalRoutes);
+app.use('/api/tickets', ticketRoutes);
 
 // Health check
 app.get('/', (req, res) => {
@@ -38,7 +40,12 @@ app.use((err, req, res, next) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
+const { startSLAScheduler } = require('./schedulers/slaReminder');
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚚 Ship2Door API Server running on port ${PORT}`);
     console.log(`   http://localhost:${PORT}\n`);
+
+    // Start background schedulers
+    startSLAScheduler();
 });

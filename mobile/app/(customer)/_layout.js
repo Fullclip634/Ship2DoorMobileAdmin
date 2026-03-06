@@ -88,6 +88,8 @@ export default function CustomerLayout() {
             <Tabs.Screen name="trip-detail" options={{ href: null }} />
             <Tabs.Screen name="personal-info" options={{ href: null }} />
             <Tabs.Screen name="support-chat" options={{ href: null }} />
+            <Tabs.Screen name="my-tickets" options={{ href: null }} />
+            <Tabs.Screen name="ticket-detail" options={{ href: null }} />
         </Tabs>
     );
 }

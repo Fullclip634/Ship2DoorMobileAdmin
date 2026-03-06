@@ -9,6 +9,9 @@ const transporter = nodemailer.createTransport({
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
     },
+    tls: {
+        rejectUnauthorized: false,
+    },
 });
 
 /**
@@ -37,7 +40,7 @@ exports.sendResetCodeEmail = async (to, firstName, code) => {
                     </p>
                     <div style="text-align: center; margin: 24px 0;">
                         <div style="display: inline-block; background: #FFF3E6; border: 2px dashed #F58220; border-radius: 12px; padding: 16px 32px;">
-                            <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #1B3A5C;">${code}</span>
+                            <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #1B3A5C; padding-left: 6px;">${code}</span>
                         </div>
                     </div>
                     <p style="color: #9CA3AF; font-size: 12px; text-align: center; margin: 24px 0 0;">
